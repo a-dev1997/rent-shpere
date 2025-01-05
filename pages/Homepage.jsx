@@ -3,15 +3,14 @@ import { BASE_ASSET } from '../config';
 import { ScrollView, View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector,useDispatch } from 'react-redux';
-import { fetchUserData } from '../reduxStore/userdataslice';
-import { fetchProperties } from '../reduxStore/getpropertiesslice';
+
 import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
     const nav=useNavigation();
   const [activeTab, setActiveTab] = useState('rent');
   const [animatedValue] = useState(new Animated.Value(0)); // Used to animate the background position
-  const dispatch = useDispatch();
+
   const { data, status } = useSelector((state) => state.userInfo);
   const {propdata,propstatus}=useSelector((state)=>state.getproperties)
   
@@ -30,11 +29,7 @@ const Home = () => {
   useEffect(() => {
     animateTabChange();
   }, [activeTab]);
-  useEffect(()=>{
-    dispatch(fetchUserData())
-    dispatch(fetchProperties())
-   console.log('render')
-  },[])
+ 
   useEffect(()=>{
     if(propstatus=='succeeded'){
         console.log(propdata.data)
@@ -49,14 +44,14 @@ const Home = () => {
   });
 
   return (
-    <ScrollView style={{ paddingHorizontal: 30, backgroundColor: 'white' }}>
+    <View style={{flex:1, paddingHorizontal: 30, backgroundColor: 'white' }}>
       <View>
         <Text style={{ fontSize: 14, fontWeight: 400, fontFamily: 'Hind', color: '#7D7F88' }}>
           Your current location
         </Text>
       </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'start', alignItems: 'center',marginVertical:10 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'start', alignItems: 'center',marginVertical:5 }}>
         <Image source={require('../assets/appimages/location.png')} />
         <Text style={{ fontWeight: 700, fontFamily: 'Hind', fontSize: 20, color: '#1A1E25' }}>
           current location
@@ -74,18 +69,32 @@ const Home = () => {
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            marginVertical:20
+            marginVertical:10,
+            width:'100%'
           }}
         >
           <TextInput
-            style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Hind', width: '100%' }}
+            style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Hind', width: '70%' }}
             placeholder="Search address, city, location"
           />
+          <TouchableOpacity style={{width:'20%'}}>
+
+            <LinearGradient
+                colors={ ['#315EE7', '#6246EA']}
+              style={{borderRadius:72,height:'70%',justifyContent:'center',alignItems:'center'}}
+              >
+                <Text
+                  style={{color:'white',textAlign:'center'}}
+                >
+                 Search
+                </Text>
+              </LinearGradient>
+          </TouchableOpacity>
         </View>
       </View>
 
       <View style={{marginVertical:10}}>
-        <Text style={{ color: '#1A1E25', fontWeight: 700, fontFamily: 'Hind', fontSize: 18 ,marginBottom:10}}>
+        <Text style={{ color: '#1A1E25', fontWeight: 700, fontFamily: 'Hind', fontSize: 18 ,marginBottom:10,height:50}}>
           Welcome to RentSphere
         </Text>
 
@@ -144,7 +153,7 @@ const Home = () => {
           </View>
         </View>
       </View>
-      <View style={{width:'100%'}}>
+      <View style={{width:'100%',display:activeTab === 'service'?'none':'block',marginVertical:10}}>
         <Text style={{fontWeight:700,fontSize:18,color:'#1A1E25'}}>
             Near Your Location
         </Text>
@@ -154,6 +163,7 @@ const Home = () => {
                 <Text style={{color:'#7879F1',fontWeight:500,fontSize:14}}>See all</Text>
             </TouchableOpacity>
         </View>
+        <ScrollView style={{marginBottom:60,height:500}}>
         { propstatus=='succeeded' ? porperties?.map((val,index)=>{
          
             return(
@@ -168,7 +178,7 @@ const Home = () => {
     <View style={{flexDirection:'row',justifyContent:'space-between'}}>
         <View style={{flexDirection:'row'}}>
             <Image source={require('../assets/appimages/room.png')} />
-            <Text style={{color:"#7D7F88"}}>{val.bedrooms} rooms</Text>
+            <Text style={{color:"#7D7F88"}}>{val.bedrooms} room</Text>
         </View>
         <View style={{flexDirection:'row'}}>
             <Image source={require('../assets/appimages/home-hashtag.png')} />
@@ -187,8 +197,15 @@ const Home = () => {
 </TouchableOpacity>
             )
         }) :''}
+        </ScrollView>
       </View>
-    </ScrollView>
+
+      <View style={{display:activeTab==='rent'?'none':'block'}}>
+      <Text style={{fontWeight:700,fontSize:18,color:'#1A1E25'}}>
+            Serivces Near you
+        </Text>
+      </View>
+    </View>
   );
 };
 

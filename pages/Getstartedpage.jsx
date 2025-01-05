@@ -1,11 +1,21 @@
 import { Image, ScrollView, Text, View,StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Screen } from "react-native-screens";
+import { useEffect } from "react";
+import { useSelector,useDispatch } from "react-redux";
+import { fetchUserData } from "../reduxStore/userdataslice";
+import { fetchProperties } from "../reduxStore/getpropertiesslice";
 
 const GetStarted=()=>{
 
     const nav=useNavigation();
-
+    const dispatch=useDispatch();
+    
+ useEffect(()=>{
+    dispatch(fetchUserData())
+    dispatch(fetchProperties())
+   console.log('render')
+  },[])
     return(
         <ScrollView>
             <View style={styles.imageview}>
