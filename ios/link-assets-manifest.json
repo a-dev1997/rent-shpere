@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/ABeeZee-Italic.ttf",
+      "sha1": "01ee49994920178bf5d94d47e2fba54c32f204fe"
+    },
+    {
+      "path": "assets/fonts/ABeeZee-Regular.ttf",
+      "sha1": "3228dce6045041ccde6ce7a12ebbcc52bbc257bd"
+    }
+  ]
+}
