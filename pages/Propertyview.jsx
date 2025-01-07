@@ -1,4 +1,4 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, TouchableOpacity,View,Text } from "react-native"
 import LinearGradient from "react-native-linear-gradient";
@@ -8,6 +8,7 @@ import axios from "axios";
 
 const PropertyVeiw=()=>{
 const route=useRoute();
+const nav=useNavigation()
 const [propertydata,setPropertydata]=useState(null)
 const [img,setImg]=useState([])
 const [viewimg,setViewimg]=useState(null)
@@ -73,6 +74,9 @@ useEffect(()=>{
      <View style={{flex:1,paddingBottom:40,backgroundColor:'white'}}>
         <ScrollView contentContainerStyle={{position:"relative"}} >
             <Image style={{height:300,width:'100%'}} source={{uri:`${BASE_ASSET}uploads/propertyImages/${viewimg}`}} />
+            <TouchableOpacity onPress={()=>{nav.goBack()}} style={{position:"absolute",zIndex:999,top:10,left:5,borderColor:'black',borderWidth:1,borderRadius:50,opacity:0.5}}>
+                <Image style={{height:50,width:50,objectFit:'contain'}} source={require('../assets/appimages/backbtn.png')} />
+            </TouchableOpacity>
             <ScrollView horizontal={true}>
                 {
                     img?.map((val,index)=>{

@@ -13,80 +13,70 @@ const Home = () => {
   const nav = useNavigation();
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('rent');
+  const [applyflter,setApplyfilter]=useState(false)
   const [animatedValue] = useState(new Animated.Value(0)); // Used to animate the background position
   const [activeFilter, setActivefilter] = useState('All');
   const [wishlistLoading,setWishlistLoading]=useState(false);
   const { data, status } = useSelector((state) => state.userInfo);
   const { propdata, propstatus, currentPage, hasMore,lastPage } = useSelector((state) => state.getproperties);
-  const [properties,setProperties]=useState(null)
+  // const [properties,setProperties]=useState(null)
   const { catData, catStatus } = useSelector((state) => state.category);
   const { locationdata, locationstatus } = useSelector((state) => state.getcurrentlocation);
   const {wishlistdata,wishliststatus}=useSelector((state)=>state.userWishlist)
+   const facility=['WiFi','Shelf check-in',"kitchen",'Free parking','Air condition','Security']
   console.log("wishlist"+JSON.stringify({wishlistdata}))
  
   const [loading, setLoading] = useState(false);
 
   // Sample data for the carousel
-const carouselData = [
-  {
-    id: '1',
-    image: 'https://www.lytmeals.in/storage/uploads/images/172632167549.jpg',
-    title: 'Image 1',
-  },
-  {
-    id: '2',
-    image: 'https://www.lytmeals.in/storage/uploads/images/172503281294.png',
-    title: 'Image 2',
-  },
-  {
-    id: '3',
-    image: 'https://www.lytmeals.in/storage/uploads/images/172632156948.jpg',
-    title: 'Image 3',
-  },
-  {
-    id: '4',
-    image: 'https://pgjaipur.com/blog/wp-content/uploads/2022/09/Tiffin-Service-in-Jaipur-3.jpg',
-    title: 'Image 4',
-  },
-];
+// const carouselData = [
+//   {
+//     id: '1',
+//     image: 'https://www.lytmeals.in/storage/uploads/images/172632167549.jpg',
+//     title: 'Image 1',
+//   },
+//   {
+//     id: '2',
+//     image: 'https://www.lytmeals.in/storage/uploads/images/172503281294.png',
+//     title: 'Image 2',
+//   },
+//   {
+//     id: '3',
+//     image: 'https://www.lytmeals.in/storage/uploads/images/172632156948.jpg',
+//     title: 'Image 3',
+//   },
+//   {
+//     id: '4',
+//     image: 'https://pgjaipur.com/blog/wp-content/uploads/2022/09/Tiffin-Service-in-Jaipur-3.jpg',
+//     title: 'Image 4',
+//   },
+// ];
 
 
 
-const renderCarousel= ({ item, index }) => {
-  return (
-    <View style={{}}>
-      <Image  source={{ uri: item.image }} style={{height:100,width:'100%',objectFit:'contain'}} />
+// const renderCarousel= ({ item, index }) => {
+//   return (
+//     <View style={{}}>
+//       <Image  source={{ uri: item.image }} style={{height:100,width:'100%',objectFit:'contain'}} />
      
-    </View>
-  );
-};
+//     </View>
+//   );
+// };
 
   // Fetch properties when propstatus is succeeded
- useEffect(() => {
+ const properties=useMemo(() => {
     if (propstatus == 'succeeded') {
-      if(currentPage==1){
-        if(activeFilter!=='All'){
-         let fiterData= propdata.filter((val)=>val.category_id==activeFilter);
-         setProperties(fiterData)
+    
        
-        }else{
-          setProperties(propdata);
-      
-        }
         
-      }else{
-      if(activeFilter!=='All'){
-        let fiterData= propdata.filter((val)=>val.category_id==activeFilter);
-        setProperties(fiterData)
       
-       }else{
-         setProperties(propdata);
-  
-       }
-      }
+        return propdata
+        
+     
+      
       }
     
-  }, [ propdata,activeFilter,propstatus]);
+  }, [ propdata,addWishlist,removeProperty]);
 
 
   const handleEndReached = () => {
@@ -95,54 +85,27 @@ const renderCarousel= ({ item, index }) => {
       return;
     }
   
-    setLoading(true);  // Set loading to true while new data is being fetched
+     // Set loading to true while new data is being fetched
     if(hasMore){
-      dispatch(fetchProperties(currentPage+1));
      
+      setLoading(true);
     // After fetching data successfully
     setTimeout(() => {
-     
+      dispatch(fetchProperties(currentPage+1));
       
       if (propstatus == 'succeeded') {
         
        
-          if(activeFilter!=='All'){
-           let fiterData= propdata.filter((val)=>val.category_id==activeFilter);
-           setProperties(fiterData)
-          }else{
-            setProperties(propdata)
-          }
-          
-        
 
-
-        // Check if the new data contains any new properties before appending
-        // setProperties((prevItems) => {
-        //   // Filter out duplicate items based on unique property ID (or any other unique identifier)
-        //   const newItems = propdata.filter(item => !prevItems.some(existingItem => existingItem.id === item.id));
-  
-        //   // If there are new items, append them to the existing list
-        //   if (newItems.length > 0) {
-        //     return [...prevItems, ...newItems];
-        //   }else{
-        //     return prevItems;
-        //   }
-        //  console.log(properties)
-        //    // If no new items, return the previous list unchanged
-        // });
-  
-        // If no new items were added, set hasMore to false to stop further requests
-        // if (propdata.length === 0 || propdata.length < 10) {  // Adjust the length check as per your API response
-        //   setHasMore(false); // No more items to load
-        // }
   
         setLoading(false);  // Reset loading state after data has been fetched
       }
-    }, 1500);
+    }, 4000);
     }  // Simulating a loading delay
     console.log('loading data ')
   };
   
+  const wishlistdat=useMemo(()=>{return wishlistdata},[addWishlist,removeProperty])
 
   //add wishlist
 
@@ -168,14 +131,30 @@ const renderCarousel= ({ item, index }) => {
   };
 
   const removeProperty = async (property_id) => {
-    await fetch(`${BASE_URL}remove-property/${property_id}`,{
-        method:'GET',
-        headers:{
-            'Authorization': `Bearer ${data.token}`,
-        'Content-Type': 'application/json',
-        }
-    }).then((res) => res.json()).then((result) => { setCount(count + 1) }).catch((err) => console.log(err))
-}
+    try {
+      const response = await fetch(`${BASE_URL}remove-property/${property_id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${data.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to remove property');
+      }
+  
+      const result = await response.json();
+  
+      // Update count on successful response
+      // setCount(count + 1);
+      dispatch(fetchWishlist())
+     
+    } catch (err) {
+      // Handle error
+      console.log('Error occurred:', err.message || err);
+    }
+  };
 
 
 
@@ -211,6 +190,7 @@ const isPropertyInWishlist = (propertyId) => {
   };
     return (
       <TouchableOpacity
+      key={item.id}
         onPress={() => {
           // Navigate to the property view
           nav.navigate('Propertyview', { id: item.id });
@@ -246,12 +226,19 @@ const isPropertyInWishlist = (propertyId) => {
                 /{item.payment_type}
               </Text>
             </View>
+           
            <TouchableOpacity  onPress={() => handleWishlistToggle(item.id)}>
-            <Image
-              style={{ height: 18, width: 18 }}
-              source={ !isInWishlist? require('../assets/appimages/heart.png'):''}
-            />
+            
+           {wishlistLoading[item.id] ? (
+                                        <ActivityIndicator />
+                                    ) : (
+                                        <Image
+                                            source={isInWishlist ? require('../assets/appimages/heart-active.png') : require('../assets/appimages/heart.png')}
+                                            style={{ width: 25, height: 25 }}
+                                        />
+                                    )}
             </TouchableOpacity>
+  
           </View>
           <View>
             <Text style={{ fontWeight: 400, fontSize: 10, color: '#7D7F88' }}>Posted on:{dataFormat(new Date())==dataFormat(item.created_at)?'Today':dataFormat(item.created_at)}</Text>
@@ -263,7 +250,7 @@ const isPropertyInWishlist = (propertyId) => {
 
   return (
     <LinearGradient colors={['white','#6246EA']} style={{ flex: 5, backgroundColor: 'white', paddingBottom: 80 }}>
-      <View style={{ paddingHorizontal: 20, flex: 1.5, paddingBottom: 10 }}>
+      <View style={{ paddingHorizontal: 20, paddingBottom: 10,}}>
         <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
           <View>
 
@@ -277,19 +264,19 @@ const isPropertyInWishlist = (propertyId) => {
         </View>
         <Image style={{height:30,width:30,objectFit:'contain'}} source={require('../assets/appimages/notification.png')} />
         </View>
-        <View>
+        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',height:100}}>
           <View
             style={{
               backgroundColor: '#F2F2F3',
               borderWidth: 1,
               borderColor: '#E3E3E7',
               borderRadius: 72,
-              height: 50,
+             
               flexDirection: 'row',
               justifyContent: 'center',
               alignItems: 'center',
-              marginVertical: 10,
-              width: '100%',
+             
+              width:'80%'
             }}
           >
             <TextInput
@@ -297,11 +284,14 @@ const isPropertyInWishlist = (propertyId) => {
               placeholder="Search address, city, location"
             />
             <TouchableOpacity style={{ width: '20%' }}>
-              <LinearGradient colors={['#315EE7', '#6246EA']} style={{ borderRadius: 72, height: '70%', justifyContent: 'center', alignItems: 'center' }}>
+              <LinearGradient colors={['#6246EA', '#6246EA']} style={{ borderRadius: 72, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ color: 'white', textAlign: 'center' }}>Search</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity onPress={()=>{setApplyfilter(!applyflter)}} style={{flexDirection:'row',justifyContent:'center',alignItems:'center',overflow:'hidden'}}>
+            <Image  source={require('../assets/appimages/filtter.png')} />
+          </TouchableOpacity>
         </View>
         {/* <View style={{ flex:4, justifyContent: 'center', alignItems: 'center' }}>
       <Carousel
@@ -317,8 +307,8 @@ const isPropertyInWishlist = (propertyId) => {
       </View>
 
       {/* Category Filter */}
-      <View style={{ width: '100%', display: activeTab === 'service' ? 'none' : 'block', flex:5 }}>
-        <View>
+      <View style={{ width: '100%', flex:5 }}>
+        {/* <View>
           <ScrollView horizontal={true}>
             <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
               <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
@@ -351,7 +341,7 @@ const isPropertyInWishlist = (propertyId) => {
               );
             })}
           </ScrollView>
-        </View>
+        </View> */}
 
         <View style={{ paddingHorizontal: 20 }}>
           <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Near Your Location</Text>
@@ -378,6 +368,102 @@ const isPropertyInWishlist = (propertyId) => {
             />
             
           {/* </View> */}
+        </View>
+      </View>
+      <View style={{display:applyflter==true?'block':'none',backgroundColor:'white',margin:10,borderRadius:10,padding:10,position:'absolute',zIndex:999,top:100}}>
+        <ScrollView>
+          <View>
+            <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Porperty type</Text>
+            <ScrollView horizontal={true}>
+            <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Any
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            {catData?.data?.map((val, index) => {
+              return (
+                <TouchableOpacity key={index} style={[styles.shadow]} onPress={() => setActivefilter(val.id)}>
+                  <LinearGradient
+                    colors={activeFilter === val.id ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']}
+                    style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: 700,
+                        fontSize: 14,
+                        fontStyle: 'italic',
+                        paddingHorizontal: 15,
+                        paddingVertical: 10,
+                      }}
+                    >
+                      {val.category}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+          <View>
+            <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Price range</Text>
+          </View>
+          <View style={{flexDirection:'row',width:'90%'}}>
+          <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Any
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  monthly
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Yearly
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+          </View>
+            <View>
+              <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Property facilities</Text>
+              <View style={{flexDirection:'row',width:'99%',flexWrap:'wrap'}}>
+              <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Any
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+              {facility.map((val)=>{
+                return(
+                  <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  {val}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+                )
+              })}
+              </View>
+            </View>
+        </ScrollView>
+        <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',width:'99%'}}>
+          <TouchableOpacity>
+            <Text>Reset all</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{backgroundColor:'black',borderRadius:20,paddingVertical:10,paddingHorizontal:20}}>
+            <Text style={{color:'white',textAlign:'center'}}>Show result</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </LinearGradient>

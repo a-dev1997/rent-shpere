@@ -46,7 +46,7 @@ const Profile=()=>{
                     <View style={{height:1,backgroundColor:"#D6D6D6",margin:10}}>
 
                     </View>
-                    <TouchableOpacity style={{flexDirection:'row',height:40,paddingVertical:10,justifyContent:'space-between',borderColor:"#E3E3E7",borderWidth:1,backgroundColor:'white',borderRadius:7, shadowColor: '#000', shadowOffset: { width: 0, height: 4 },shadowOpacity: 0.5, shadowRadius: 6,marginVertical:10}}>
+                    <TouchableOpacity style={{flexDirection:'row',paddingVertical:10,justifyContent:'space-between',borderColor:"#E3E3E7",borderWidth:1,backgroundColor:'white',borderRadius:7, shadowColor: '#000', shadowOffset: { width: 0, height: 4 },shadowOpacity: 0.5, shadowRadius: 6,marginVertical:10}}>
                         
                         <Image style={{height:22,width:22}} source={require('../assets/appimages/account.png')} />
                     
@@ -54,7 +54,7 @@ const Profile=()=>{
                         <Text style={{color:'#1A1E25',fontWeight:500,fontSize:16}}>Profile details</Text>
                         <Image style={{height:22,width:22}} source={require("../assets/appimages/greaterthan.png")} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flexDirection:'row',height:40,paddingVertical:10,justifyContent:'space-between',borderColor:"#E3E3E7",borderWidth:1,backgroundColor:'white',borderRadius:7, shadowColor: '#000', shadowOffset: { width: 0, height: 4 },shadowOpacity: 0.5, shadowRadius: 6,marginVertical:10}}>
+                    <TouchableOpacity style={{flexDirection:'row',paddingVertical:10,justifyContent:'space-between',borderColor:"#E3E3E7",borderWidth:1,backgroundColor:'white',borderRadius:7, shadowColor: '#000', shadowOffset: { width: 0, height: 4 },shadowOpacity: 0.5, shadowRadius: 6,marginVertical:10}}>
                         
                         <Image style={{height:22,width:22}} source={require('../assets/appimages/settingicon.png')} />
                     
@@ -62,7 +62,7 @@ const Profile=()=>{
                         <Text style={{color:'#1A1E25',fontWeight:500,fontSize:16}}>Settings</Text>
                         <Image style={{height:22,width:22}} source={require("../assets/appimages/greaterthan.png")} />
                     </TouchableOpacity>
-                    <TouchableOpacity style={{flexDirection:'row',height:40,paddingVertical:10,justifyContent:'space-between',borderColor:"#E3E3E7",borderWidth:1,backgroundColor:'white',borderRadius:7, shadowColor: '#000', shadowOffset: { width: 0, height: 4 },shadowOpacity: 0.5, shadowRadius: 6,marginVertical:10}}>
+                    <TouchableOpacity style={{flexDirection:'row',paddingVertical:10,justifyContent:'space-between',borderColor:"#E3E3E7",borderWidth:1,backgroundColor:'white',borderRadius:7, shadowColor: '#000', shadowOffset: { width: 0, height: 4 },shadowOpacity: 0.5, shadowRadius: 6,marginVertical:10}}>
                         
                         <Image style={{height:22,width:22}} source={require('../assets/appimages/faq.png')} />
                     
