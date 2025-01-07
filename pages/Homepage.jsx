@@ -1,303 +1,422 @@
-import React, { useState, useEffect } from 'react';
-import { BASE_ASSET } from '../config';
-import { ScrollView, View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { BASE_ASSET, BASE_URL } from '../config';
+import Carousel from 'react-native-reanimated-carousel';
+import { ScrollView, View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Animated, ActivityIndicator, FlatList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSelector,useDispatch } from 'react-redux';
-
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { fetchProperties } from '../reduxStore/getpropertiesslice';
+import axios from 'axios';
+import { fetchWishlist } from '../reduxStore/wishlistslice';
 
 const Home = () => {
-    const nav=useNavigation();
+  const nav = useNavigation();
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('rent');
   const [animatedValue] = useState(new Animated.Value(0)); // Used to animate the background position
-
+  const [activeFilter, setActivefilter] = useState('All');
+  const [wishlistLoading,setWishlistLoading]=useState(false);
   const { data, status } = useSelector((state) => state.userInfo);
-  const {propdata,propstatus}=useSelector((state)=>state.getproperties)
-  
-  const [porperties,setProperties]=useState(null);
+  const { propdata, propstatus, currentPage, hasMore,lastPage } = useSelector((state) => state.getproperties);
+  const [properties,setProperties]=useState(null)
+  const { catData, catStatus } = useSelector((state) => state.category);
+  const { locationdata, locationstatus } = useSelector((state) => state.getcurrentlocation);
+  const {wishlistdata,wishliststatus}=useSelector((state)=>state.userWishlist)
+  console.log("wishlist"+JSON.stringify({wishlistdata}))
  
-  // Function to animate the background color and position
-  const animateTabChange = () => {
-    Animated.timing(animatedValue, {
-      toValue: activeTab === 'rent' ? 0 : 1, // 0 for rent, 1 for service
-      duration: 300, // Shortened duration for smoother transition
-      useNativeDriver: false, // We are animating properties that are not native
-    }).start();
-  };
+  const [loading, setLoading] = useState(false);
 
-  // Call animation function whenever activeTab changes
-  useEffect(() => {
-    animateTabChange();
-  }, [activeTab]);
- 
-  useEffect(()=>{
-    if(propstatus=='succeeded'){
-        console.log(propdata.data)
-        setProperties(propdata.data)
-        console.log('render')
-    }
-  },[propdata])
-  // Interpolate the background position to slide the background
-  const backgroundPosition = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '50%'], // Moving background from left (0%) to right (50%)
-  });
+  // Sample data for the carousel
+const carouselData = [
+  {
+    id: '1',
+    image: 'https://www.lytmeals.in/storage/uploads/images/172632167549.jpg',
+    title: 'Image 1',
+  },
+  {
+    id: '2',
+    image: 'https://www.lytmeals.in/storage/uploads/images/172503281294.png',
+    title: 'Image 2',
+  },
+  {
+    id: '3',
+    image: 'https://www.lytmeals.in/storage/uploads/images/172632156948.jpg',
+    title: 'Image 3',
+  },
+  {
+    id: '4',
+    image: 'https://pgjaipur.com/blog/wp-content/uploads/2022/09/Tiffin-Service-in-Jaipur-3.jpg',
+    title: 'Image 4',
+  },
+];
 
+
+
+const renderCarousel= ({ item, index }) => {
   return (
-    <View style={{flex:1, paddingHorizontal: 30, backgroundColor: 'white' }}>
-      <View>
-        <Text style={{ fontSize: 14, fontWeight: 400, fontFamily: 'Hind', color: '#7D7F88' }}>
-          Your current location
-        </Text>
-      </View>
-
-      <View style={{ flexDirection: 'row', justifyContent: 'start', alignItems: 'center',marginVertical:5 }}>
-        <Image source={require('../assets/appimages/location.png')} />
-        <Text style={{ fontWeight: 700, fontFamily: 'Hind', fontSize: 20, color: '#1A1E25' }}>
-          current location
-        </Text>
-      </View>
-
-      <View>
-        <View
-          style={{
-            backgroundColor: '#F2F2F3',
-            borderWidth: 1,
-            borderColor: '#E3E3E7',
-            borderRadius: 72,
-            height: 50,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginVertical:10,
-            width:'100%'
-          }}
-        >
-          <TextInput
-            style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Hind', width: '70%' }}
-            placeholder="Search address, city, location"
-          />
-          <TouchableOpacity style={{width:'20%'}}>
-
-            <LinearGradient
-                colors={ ['#315EE7', '#6246EA']}
-              style={{borderRadius:72,height:'70%',justifyContent:'center',alignItems:'center'}}
-              >
-                <Text
-                  style={{color:'white',textAlign:'center'}}
-                >
-                 Search
-                </Text>
-              </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={{marginVertical:10}}>
-        <Text style={{ color: '#1A1E25', fontWeight: 700, fontFamily: 'Hind', fontSize: 18 ,marginBottom:10,height:50}}>
-          Welcome to RentSphere
-        </Text>
-
-        {/* Tab Buttons Section */}
-        <View style={styles.container}>
-          <View style={styles.buttonContainer}>
-            {/* Animated background */}
-            <Animated.View
-              style={[
-                styles.animatedBackground,
-                {
-                  transform: [{ translateX: backgroundPosition }],
-                },
-              ]}
-            />
-
-            {/* I need to rent button with LinearGradient background */}
-            <TouchableOpacity
-              style={[styles.button, activeTab === 'rent' && { backgroundColor: '#315EE7' }]}
-              onPress={() => setActiveTab('rent')}
-            >
-              <LinearGradient
-                colors={activeTab === 'rent' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']}
-                style={styles.linearGradient} // Apply linear gradient
-              >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    { color: activeTab === 'rent' ? '#fff' : '#000' }, // Active text color is white, inactive is black
-                  ]}
-                >
-                  I need to rent
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            {/* I want service button with LinearGradient background */}
-            <TouchableOpacity
-              style={[styles.button, activeTab === 'service' && { backgroundColor: '#315EE7' },styles.shadow,]}
-              onPress={() => setActiveTab('service')}
-            >
-              <LinearGradient
-                colors={activeTab === 'service' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']}
-                style={styles.linearGradient} // Apply linear gradient
-              >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    { color: activeTab === 'service' ? '#fff' : '#000' }, // Active text color is white, inactive is black
-                  ]}
-                >
-                  I want service
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      <View style={{width:'100%',display:activeTab === 'service'?'none':'block',marginVertical:10}}>
-        <Text style={{fontWeight:700,fontSize:18,color:'#1A1E25'}}>
-            Near Your Location
-        </Text>
-        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%'}}>
-            <Text style={{fontWeight:400,fontSize:13,color:'#7D7F88'}}>3333 properties</Text>
-            <TouchableOpacity>
-                <Text style={{color:'#7879F1',fontWeight:500,fontSize:14}}>See all</Text>
-            </TouchableOpacity>
-        </View>
-        <ScrollView style={{marginBottom:60,height:500}}>
-        { propstatus=='succeeded' ? porperties?.map((val,index)=>{
-         
-            return(
-                <TouchableOpacity onPress={()=>{nav.navigate('Propertyview',{index:index})}} key={index} style={styles.cardContainer}>
-  <Image
-    style={styles.cardImage}
-    source={{ uri: `${BASE_ASSET}uploads/propertyImages/${val.featured_image}` }}
-  />
-  <View style={styles.cardContent}>
-    <Text style={styles.cardText}>{val.property_name}</Text>
-    <Text style={{color:'#7D7F88'}}>{val.city + val.state}</Text>
-    <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-        <View style={{flexDirection:'row'}}>
-            <Image source={require('../assets/appimages/room.png')} />
-            <Text style={{color:"#7D7F88"}}>{val.bedrooms} room</Text>
-        </View>
-        <View style={{flexDirection:'row'}}>
-            <Image source={require('../assets/appimages/home-hashtag.png')} />
-            <Text style={{color:"#7D7F88"}}>{val.carpet_area}m2</Text>
-        </View>
-    </View>
-    <View style={{flexDirection:'row',justifyContent:'space-between'}} >
-        <View style={{flexDirection:'row'}}>
-        <Text style={{fontWeight:700,fontSize:12,color:'#000000'}}>{val.price}</Text><Text style={{fontWeight:400,fontSize:10,color:'#7D7F88'}}>/{val.payment_type}</Text>
-        </View>
-        
-            <Image style={{height:18,width:18}}  source={require('../assets/appimages/heart.png')} />
-        
-    </View>
-  </View>
-</TouchableOpacity>
-            )
-        }) :''}
-        </ScrollView>
-      </View>
-
-      <View style={{display:activeTab==='rent'?'none':'block'}}>
-      <Text style={{fontWeight:700,fontSize:18,color:'#1A1E25'}}>
-            Serivces Near you
-        </Text>
-      </View>
+    <View style={{}}>
+      <Image  source={{ uri: item.image }} style={{height:100,width:'100%',objectFit:'contain'}} />
+     
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom:20
-  },
-  buttonContainer: {
-    padding:5,
-    backgroundColor: '#F2F2F3',
-    borderWidth: 1,
-    borderColor: '#E3E3E7',
-    borderRadius: 72,
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%', // Adjust this based on your layout needs
-    position: 'relative', // Required for animated background
-  },
-  button: {
-    width: '40%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-    borderRadius: 72,
-    backgroundColor: 'transparent', // Default background color
-  },
-  linearGradient: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 72,
-    height: '100%',
-    width: '100%',
-  },
-  buttonText: {
-    textAlign: 'center',
-    fontSize: 16,
-    fontFamily: 'Hind',
-  },
-  animatedBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '50%', // The background should cover one button width at a time
-    height: '100%',
-    borderRadius: 72,
-  },
-    // Shadow effect
-    shadow: {
-        // iOS shadow properties
-        shadowColor: '#000', // Shadow color
-        shadowOffset: { width: 0, height: 4 }, // Offset of the shadow
-        shadowOpacity: 0.2, // Opacity of the shadow
-        shadowRadius: 6, // Radius of the shadow blur
+  // Fetch properties when propstatus is succeeded
+ useEffect(() => {
+    if (propstatus == 'succeeded') {
+      if(currentPage==1){
+        if(activeFilter!=='All'){
+         let fiterData= propdata.filter((val)=>val.category_id==activeFilter);
+         setProperties(fiterData)
+       
+        }else{
+          setProperties(propdata);
+      
+        }
+        
+      }else{
+      if(activeFilter!=='All'){
+        let fiterData= propdata.filter((val)=>val.category_id==activeFilter);
+        setProperties(fiterData)
+      
+       }else{
+         setProperties(propdata);
+  
+       }
+      }
+      }
     
-        // Android shadow properties
-        elevation: 5, // Elevation for Android devices to create shadow
-      },
-      cardContainer: {
-        flexDirection: 'row',
-        borderRadius: 10,
-        overflow: 'hidden',
-        marginVertical: 10,
-        backgroundColor: 'white', // White background for the floating effect
-        elevation: 5, // For Android shadow effect
-        shadowColor: '#000', // Shadow color for iOS
-        shadowOffset: { width: 0, height: 2 }, // Shadow offset (vertical)
-        shadowOpacity: 0.2, // Shadow opacity (0 is no shadow, 1 is fully opaque)
-        shadowRadius: 5, // Shadow blur radius
-      },
-      cardImage: {
-        height: 200,
-        width: '40%',
-        objectFit: 'cover', // Ensure the image fits the container properly
-      },
-      cardContent: {
-        justifyContent: 'start',
-        paddingLeft: 20,
-        flex: 1, // This will make the content area take the remaining space
-        justifyContent:'space-between',
-        padding:20
-      },
-      cardText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#222', // Text color
-      },
+  }, [ propdata,activeFilter,propstatus]);
+
+
+  const handleEndReached = () => {
+    // Prevent fetching if already loading or there are no more items
+    if (loading || !hasMore) {
+      return;
+    }
+  
+    setLoading(true);  // Set loading to true while new data is being fetched
+    if(hasMore){
+      dispatch(fetchProperties(currentPage+1));
+     
+    // After fetching data successfully
+    setTimeout(() => {
+     
+      
+      if (propstatus == 'succeeded') {
+        
+       
+          if(activeFilter!=='All'){
+           let fiterData= propdata.filter((val)=>val.category_id==activeFilter);
+           setProperties(fiterData)
+          }else{
+            setProperties(propdata)
+          }
+          
+        
+
+
+        // Check if the new data contains any new properties before appending
+        // setProperties((prevItems) => {
+        //   // Filter out duplicate items based on unique property ID (or any other unique identifier)
+        //   const newItems = propdata.filter(item => !prevItems.some(existingItem => existingItem.id === item.id));
+  
+        //   // If there are new items, append them to the existing list
+        //   if (newItems.length > 0) {
+        //     return [...prevItems, ...newItems];
+        //   }else{
+        //     return prevItems;
+        //   }
+        //  console.log(properties)
+        //    // If no new items, return the previous list unchanged
+        // });
+  
+        // If no new items were added, set hasMore to false to stop further requests
+        // if (propdata.length === 0 || propdata.length < 10) {  // Adjust the length check as per your API response
+        //   setHasMore(false); // No more items to load
+        // }
+  
+        setLoading(false);  // Reset loading state after data has been fetched
+      }
+    }, 1500);
+    }  // Simulating a loading delay
+    console.log('loading data ')
+  };
+  
+
+  //add wishlist
+
+  const addWishlist = async (prop) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}post-wishlist`,
+        {
+          property_id: prop,  // Pass the property_id directly in the body as an object
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${data.token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response.data);  // Log the response if needed
+      dispatch(fetchWishlist())
+    } catch (error) {
+      console.error(error);  // Log any errors that happen
+    }
+  };
+
+  const removeProperty = async (property_id) => {
+    await fetch(`${BASE_URL}remove-property/${property_id}`,{
+        method:'GET',
+        headers:{
+            'Authorization': `Bearer ${data.token}`,
+        'Content-Type': 'application/json',
+        }
+    }).then((res) => res.json()).then((result) => { setCount(count + 1) }).catch((err) => console.log(err))
+}
+
+
+
+// Check if property is in wishlist
+const isPropertyInWishlist = (propertyId) => {
+  if (wishlistdata != null) {
+      return wishlistdata?.data?.some(item => item.property_id == propertyId);
+  }
+
+};
+
+  const renderItem = ({ item }) => {
+    const dataFormat = (date) => {
+      if (!date) return "";
+      const a = new Date(date);
+      const options = { year: "numeric", month: "long" ,day: "numeric"};
+      return a.toLocaleDateString("en-US", options);
+    };
+
+    const isInWishlist = isPropertyInWishlist(item.id);
+    const handleWishlistToggle = (propertyId) => {
+      setWishlistLoading(prevState => ({ ...prevState, [propertyId]: true }));
+
+      if (isInWishlist) {
+          removeProperty(propertyId).finally(() => {
+              setWishlistLoading(prevState => ({ ...prevState, [propertyId]: false }));
+          });
+      } else {
+          addWishlist( propertyId).finally(() => {
+              setWishlistLoading(prevState => ({ ...prevState, [propertyId]: false }));
+          });
+      }
+  };
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          // Navigate to the property view
+          nav.navigate('Propertyview', { id: item.id });
+        }}
+        style={[styles.cardContainer,styles.shadow]}
+      >
+      
+        <Image
+          style={styles.cardImage}
+          source={{ uri: `${BASE_ASSET}uploads/propertyImages/${item.featured_image}` }}
+        />
+        <View style={styles.cardContent}>
+          <Text style={styles.cardText}>{item.property_name}</Text>
+          <Text style={{ color: '#7D7F88' }}>
+            {item.city + ' ' + item.state}
+          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row' }}>
+              <Image source={require('../assets/appimages/room.png')} />
+              <Text style={{ color: '#7D7F88' }}>{item.bedrooms} room</Text>
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+              <Image source={require('../assets/appimages/home-hashtag.png')} />
+              <Text style={{ color: '#7D7F88' }}>{item.carpet_area}m2</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={{ fontWeight: 700, fontSize: 12, color: '#000000' }}>
+                {item.price}
+              </Text>
+              <Text style={{ fontWeight: 400, fontSize: 10, color: '#7D7F88' }}>
+                /{item.payment_type}
+              </Text>
+            </View>
+           <TouchableOpacity  onPress={() => handleWishlistToggle(item.id)}>
+            <Image
+              style={{ height: 18, width: 18 }}
+              source={ !isInWishlist? require('../assets/appimages/heart.png'):''}
+            />
+            </TouchableOpacity>
+          </View>
+          <View>
+            <Text style={{ fontWeight: 400, fontSize: 10, color: '#7D7F88' }}>Posted on:{dataFormat(new Date())==dataFormat(item.created_at)?'Today':dataFormat(item.created_at)}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <LinearGradient colors={['white','#6246EA']} style={{ flex: 5, backgroundColor: 'white', paddingBottom: 80 }}>
+      <View style={{ paddingHorizontal: 20, flex: 1.5, paddingBottom: 10 }}>
+        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+          <View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'start', alignItems: 'center', marginVertical: 5 }}>
+          <Image source={require('../assets/appimages/location.png')} />
+          <Text style={{ fontWeight: 700, fontFamily: 'Hind', fontSize: 20, color: '#1A1E25' }}>
+            {locationdata ? locationdata.location : 'not found'}
+          </Text>
+        </View>
+       
+        </View>
+        <Image style={{height:30,width:30,objectFit:'contain'}} source={require('../assets/appimages/notification.png')} />
+        </View>
+        <View>
+          <View
+            style={{
+              backgroundColor: '#F2F2F3',
+              borderWidth: 1,
+              borderColor: '#E3E3E7',
+              borderRadius: 72,
+              height: 50,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginVertical: 10,
+              width: '100%',
+            }}
+          >
+            <TextInput
+              style={{ fontSize: 16, fontWeight: 400, fontFamily: 'Hind', width: '70%' }}
+              placeholder="Search address, city, location"
+            />
+            <TouchableOpacity style={{ width: '20%' }}>
+              <LinearGradient colors={['#315EE7', '#6246EA']} style={{ borderRadius: 72, height: '70%', justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color: 'white', textAlign: 'center' }}>Search</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* <View style={{ flex:4, justifyContent: 'center', alignItems: 'center' }}>
+      <Carousel
+        loop
+        width={400} // Set carousel width
+        height={200} // Set carousel height
+        autoPlay={true} // Auto play the carousel
+        data={carouselData} // Data array for carousel
+        renderItem={renderCarousel}
+      />
+    </View> */}
+    
+      </View>
+
+      {/* Category Filter */}
+      <View style={{ width: '100%', display: activeTab === 'service' ? 'none' : 'block', flex:5 }}>
+        <View>
+          <ScrollView horizontal={true}>
+            <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  All
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            {catData?.data?.map((val, index) => {
+              return (
+                <TouchableOpacity key={index} style={[styles.shadow]} onPress={() => setActivefilter(val.id)}>
+                  <LinearGradient
+                    colors={activeFilter === val.id ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']}
+                    style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: 700,
+                        fontSize: 14,
+                        fontStyle: 'italic',
+                        paddingHorizontal: 15,
+                        paddingVertical: 10,
+                      }}
+                    >
+                      {val.category}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        <View style={{ paddingHorizontal: 20 }}>
+          <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Near Your Location</Text>
+          {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            <Text style={{ fontWeight: 400, fontSize: 13, color: '#7D7F88' }}>3333 properties</Text>
+            <TouchableOpacity onPress={() => nav.navigate('Seeall')}>
+              <Text style={{ color: '#7879F1', fontWeight: 500, fontSize: 14 }}>See all</Text>
+            </TouchableOpacity>
+          </View> */}
+
+          {/* FlatList for properties */}
+          {/* <View style={{ flex: 1, width: '100%' ,height:100}}> */}
+           
+            <FlatList
+         
+              data={properties} // Use the properties state here
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+              onEndReached={handleEndReached}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={
+                loading && hasMore==true ? <ActivityIndicator size="large" color="#315EE7" /> : ''
+              }
+            />
+            
+          {/* </View> */}
+        </View>
+      </View>
+    </LinearGradient>
+  );
+};
+
+const styles = StyleSheet.create({
+  cardContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 15,
+    overflow: 'hidden',
+    marginHorizontal: 10,
+    flexDirection:'row',
+    
+   
+   
+  },
+  cardImage: {
+    width: '30%',
+    height: 160,
+  },
+  cardContent: {
+    padding: 10,
+    justifyContent:'space-between'
+  },
+  cardText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: '#000',
+  },
+  shadow: {
+    elevation: 5,
+    shadowColor: '#171717',
+    shadowOffset: { width: 1, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 2,
+  },
+  
 });
 
 export default Home;

@@ -4,28 +4,72 @@ import { Image, ScrollView, TouchableOpacity,View,Text } from "react-native"
 import LinearGradient from "react-native-linear-gradient";
 import { useSelector } from "react-redux";
 import { BASE_ASSET, BASE_URL } from "../config";
+import axios from "axios";
 
 const PropertyVeiw=()=>{
 const route=useRoute();
 const [propertydata,setPropertydata]=useState(null)
 const [img,setImg]=useState([])
 const [viewimg,setViewimg]=useState(null)
-const {index}=route.params;
-const {propdata,propstatus}=useSelector((state)=>state.getproperties)
-console.log(propdata.data[index].user_data.profile_img)
-useEffect(()=>{
-if(propdata.data[index]){
-        setPropertydata(propdata.data[index])
-        // console.log(propertydata.images)
-        if(propertydata!=null){
-       setViewimg(propertydata.featured_image)
-        setImg(propertydata.images.split(','))
-        }
-}
-},[propertydata])
+const {id}=route.params;
+const [count,setCount]=useState(1)
 
-   if(propstatus=='succeeded'&& propertydata!=null){
+const [property,setPorperty]=useState(null)
+const {data,status}=useSelector((state)=>state.userInfo)
+// console.log(propdata)
+
+
+
+const getProperty = async () => {
+    try {
+        // Make the API call with axios
+        const response = await axios.post('https://rentsphere.onavinfosolutions.com/api/single-property', 
+            { id },
+            {
+                headers: {
+                    'Authorization': `Bearer ${data.token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        // Handle the response data
+        
+        setPorperty(response.data.data);
+        // setImages(response.data.data.images.split(","));
+        setCount(count+1)
+
+    } catch (err) {
+        // Handle any errors that occur during the request
+        console.error('Error occurred:', err.message || err);
+    } finally {
+        // Ensure loading is set to false, regardless of success or failure
+        setLoading(false);
+    }
+};
+
+
+useEffect(()=>{
+    getProperty()
+
+},[])
+useEffect(()=>{
+    if(property){
+        console.log(count)
+        
+         
+         
+        setViewimg(property.featured_image)
+         setImg(property.images.split(','))
+        
+         
+         // console.log(img)
+ }
+},[property])
+
+   if(property!=null){
     return(
+       
      <View style={{flex:1,paddingBottom:40,backgroundColor:'white'}}>
         <ScrollView contentContainerStyle={{position:"relative"}} >
             <Image style={{height:300,width:'100%'}} source={{uri:`${BASE_ASSET}uploads/propertyImages/${viewimg}`}} />
@@ -44,19 +88,19 @@ if(propdata.data[index]){
         <View style={{margin:10}}>
             <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <Text style={{fontWeight:700,fontSize:20,color:'#1A1E25',paddingVertical:10}}>
-                    {propertydata.property_name}
+                    {property.property_name}
                 </Text>
-                <Image style={{height:40,width:40}} source={require('../assets/appimages/heart.png')} />
+                <Image style={{height:40,width:40,objectFit:'contain'}} source={require('../assets/appimages/heart.png')} />
             </View>
             <View >
                 <View style={{flexDirection:'row',marginVertical:10}}>
                 <Image style={{height:18,width:18}}  source={require('../assets/appimages/location-small.png')} />
-                <Text style={{fontWeight:400,fontSize:16,color:'#7D7F88'}}>{propertydata.city},{propertydata.state}</Text>
+                <Text style={{fontWeight:400,fontSize:16,color:'#7D7F88'}}>{property.city},{property.state}</Text>
                 </View>
                 
                 <View style={{flexDirection:'row',justifyContent:'space-between',width:'60%',marginVertical:10}}>
-                    <View style={{flexDirection:'row'}} ><Image source={require("../assets/appimages/room.png")} /><Text style={{fontWeight:400,fontSize:16,color:'#7D7F88',marginHorizontal:5}}>{propertydata.bedrooms} room</Text></View>
-                    <View style={{flexDirection:'row'}}><Image source={require('../assets/appimages/home-hashtag.png')} /><Text style={{fontWeight:400,fontSize:16,color:'#7D7F88',marginHorizontal:5}}>{propertydata.carpet_area}m2</Text></View>
+                    <View style={{flexDirection:'row'}} ><Image source={require("../assets/appimages/room.png")} /><Text style={{fontWeight:400,fontSize:16,color:'#7D7F88',marginHorizontal:5}}>{property.bedrooms} room</Text></View>
+                    <View style={{flexDirection:'row'}}><Image source={require('../assets/appimages/home-hashtag.png')} /><Text style={{fontWeight:400,fontSize:16,color:'#7D7F88',marginHorizontal:5}}>{property.carpet_area}m2</Text></View>
                 </View>
                 <View style={{borderWidth:1,borderColor:'#D6D6D6',marginVertical:10}}>
 
@@ -65,11 +109,11 @@ if(propdata.data[index]){
             
             <View style={{flexDirection:'row',justifyContent:'space-between',marginVertical:10}}>
                 <View style={{flexDirection:"row"}}>
-                <Image style={{height:50,width:50,borderRadius:50}} source={ propertydata && propertydata.user_data && propertydata.user_data.profile_img!=null ? {uri:`${BASE_ASSET}/${propertydata.user_data.profile_img}`}:''} />
+                <Image style={{height:50,width:50,borderRadius:50}} source={ property && property.user_data && property.user_data.profile_img!=null ? {uri:`${BASE_ASSET}/${property.user_data.profile_img}`}:''} />
                 <View style={{marginHorizontal:20}}>
-                    <Text>{propertydata.user_data && propertydata.user_data!=null ? propertydata.user_data.name:'anonymous'}</Text>
+                    <Text>{property.user_data && property.user_data!=null ? property.user_data.name:'anonymous'}</Text>
                     <Text style={{color:'#7D7F88',fontStyle:'italic'}}>
-                        {propertydata.listed_by}
+                        {property.listed_by}
                     </Text>
                 </View>
                 </View>
@@ -88,7 +132,7 @@ if(propdata.data[index]){
                     Description
                 </Text>
                 <Text style={{fontWeight:400,fontSize:16,color:'#7D7F88'}}>
-                    {propertydata.description}
+                    {property.description}
                 </Text>
             </View>
         </View>
@@ -114,13 +158,13 @@ if(propdata.data[index]){
         color: '#1A1E25',
         paddingVertical: 10
       }}>
-        {propertydata.price}/{propertydata.payment_type}
+        {property.price}/{property.payment_type}
       </Text>
       
       {/* Apply Button */}
       <TouchableOpacity onPress={() => { /* handle apply button click */ }}>
         <LinearGradient
-          colors={['#315EE7', '#6246EA']}
+          colors={['#917AFD', '#6246EA']}
           style={{
             height: 40,  // Defined height for button
             width: 120,  // Defined width for button

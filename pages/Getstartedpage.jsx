@@ -5,7 +5,10 @@ import { useEffect } from "react";
 import { useSelector,useDispatch } from "react-redux";
 import { fetchUserData } from "../reduxStore/userdataslice";
 import { fetchProperties } from "../reduxStore/getpropertiesslice";
-
+import { fetchCatData } from "../reduxStore/categorydataslice";
+import { fetchCurrentlocation } from "../reduxStore/currentlocationslice";
+import { fetchProfile } from "../reduxStore/profiledataslice";
+import { fetchWishlist } from "../reduxStore/wishlistslice";
 const GetStarted=()=>{
 
     const nav=useNavigation();
@@ -14,6 +17,10 @@ const GetStarted=()=>{
  useEffect(()=>{
     dispatch(fetchUserData())
     dispatch(fetchProperties())
+    dispatch(fetchCatData(1))
+    dispatch(fetchCurrentlocation())
+    dispatch(fetchProfile())
+    dispatch(fetchWishlist())
    console.log('render')
   },[])
     return(
@@ -58,7 +65,7 @@ const styles=StyleSheet.create({
         display:'flex',
         alignContent:'center',
         alignItems:'center',
-        height:'50%',
+        height:'30%',
        paddingTop:30,
         
     },

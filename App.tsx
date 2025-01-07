@@ -1,4 +1,5 @@
 import { View,Text,Image } from "react-native"
+import 'react-native-reanimated';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -13,6 +14,7 @@ import { Provider } from "react-redux";
 import Profile from "./pages/Profilepage";
 import PropertyVeiw from "./pages/Propertyview";
 import Wishlist from "./pages/Wishlistpage";
+import SeeAll from "./pages/Seeallpage";
  
 
 function  RootStack(){
@@ -25,6 +27,7 @@ function  RootStack(){
     <Stack.Screen name="Signup" component={Signup} />
     <Stack.Screen name="Mytabs" component={MyTabs} />
     <Stack.Screen name="Propertyview" component={PropertyVeiw} />
+    <Stack.Screen name="Seeall" component={SeeAll} />
   </Stack.Navigator>
   )
 }

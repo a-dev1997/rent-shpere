@@ -7,25 +7,29 @@ import { BASE_ASSET } from "../config";
 
 const Profile=()=>{
     
-    const {data,status}=useSelector((state)=>state.userInfo);
+    const {profiledata,profilestatus}=useSelector((state)=>state.userProfile);
+    console.log(profiledata)
+    
     const [userData,setUserdata]=useState(null)
-    const profiledata=async()=>{
-        try{
-        let response = await axios.get('https://rentsphere.onavinfosolutions.com/api/profile-data',{
-            headers:{
-                 'Authorization': `Bearer ${data.token}`
-            }
-        })
-        setUserdata(response.data.data)
-        console.log(response.data.data)
+    // const profiledata=async()=>{
+    //     try{
+    //     let response = await axios.get('https://rentsphere.onavinfosolutions.com/api/profile-data',{
+    //         headers:{
+    //              'Authorization': `Bearer ${data.token}`
+    //         }
+    //     })
+    //     setUserdata(response.data.data)
+    //     console.log(response.data.data)
 
-    }catch(error){
-
-    }
-    }
+    // }catch(error){
+    //     console.log(error)
+    // }
+    // }
     useEffect(()=>{
-        profiledata()
-    },[])
+    if(profilestatus=='succeeded'){
+        setUserdata(profiledata.data )
+    }
+    },[profilestatus])
     if(userData==null){
         return(
             <ActivityIndicator />
