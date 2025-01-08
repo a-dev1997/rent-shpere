@@ -3,18 +3,22 @@ import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 import { BASE_ASSET } from "../config";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 
 
 const SeeAll=()=>{
   const nav=useNavigation()
 const {catData,catStatus}=useSelector((state)=>state.category);
 const {propdata,propstatus}=useSelector((state)=>state.getproperties)
+  const [applyflter,setApplyfilter]=useState(false)
 
+    const [activeFilter, setActivefilter] = useState('All');
+    const facility=['WiFi','Shelf check-in',"kitchen",'Free parking','Air condition','Security']
     return(
         <View style={{flex:8}}>
          <View style={{flex:0.7,flexDirection:'row',padding:5,justifyContent:'space-between',alignItems:'center',width:'100%'}}>
           <TextInput style={{backgroundColor:'white',width:'80%',borderRadius:70,height:50,paddingHorizontal:10}}  placeholder="Search properties"  />
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>{setApplyfilter(!applyflter);console.log(applyflter)}}>
                                 
                                 <LinearGradient
                                       colors={ ['#315EE7', '#6246EA']}
@@ -67,7 +71,7 @@ const {propdata,propstatus}=useSelector((state)=>state.getproperties)
                 })}
             </ScrollView>
             </View> */}
-            <View style={{flex:7.5,padding:10,backgroundColor:'white',borderTopLeftRadius:10,borderTopRightRadius:10}}>
+            <View style={{flex:7.5,padding:10,backgroundColor:'white',borderTopLeftRadius:10,borderTopRightRadius:10,display:applyflter==false?'block':'none'}}>
               <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <Text style={{fontWeight:500,fontSize:18,color:'black'}}>total properties</Text>
                 <View style={{flexDirection:'row'}}>
@@ -112,6 +116,102 @@ const {propdata,propstatus}=useSelector((state)=>state.getproperties)
         }) :''}
         </ScrollView>
             </View>
+            <View style={{display:applyflter==true?'block':'none',backgroundColor:'white',margin:10,borderRadius:10,padding:10,flex:7.5}}>
+        <ScrollView>
+          <View>
+            <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Porperty type</Text>
+            <ScrollView horizontal={true}>
+            <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Any
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            {catData?.data?.map((val, index) => {
+              return (
+                <TouchableOpacity key={index} style={[styles.shadow]} onPress={() => setActivefilter(val.id)}>
+                  <LinearGradient
+                    colors={activeFilter === val.id ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']}
+                    style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: 700,
+                        fontSize: 14,
+                        fontStyle: 'italic',
+                        paddingHorizontal: 15,
+                        paddingVertical: 10,
+                      }}
+                    >
+                      {val.category}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+          <View>
+            <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Price range</Text>
+          </View>
+          <View style={{flexDirection:'row',width:'90%'}}>
+          <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Any
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  monthly
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Yearly
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+          </View>
+            <View>
+              <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Property facilities</Text>
+              <View style={{flexDirection:'row',width:'99%',flexWrap:'wrap'}}>
+              <TouchableOpacity style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  Any
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+              {facility.map((val,index)=>{
+                return(
+                  <TouchableOpacity key={index} style={[styles.shadow]} onPress={() => setActivefilter('All')}>
+              <LinearGradient colors={activeFilter === 'All' ? ['#315EE7', '#6246EA'] : ['#F2F2F3', '#F2F2F3']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
+                <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
+                  {val}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+                )
+              })}
+              </View>
+            </View>
+        </ScrollView>
+        <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',width:'99%'}}>
+          <TouchableOpacity>
+            <Text>Reset all</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{backgroundColor:'black',borderRadius:20,paddingVertical:10,paddingHorizontal:20}}>
+            <Text style={{color:'white',textAlign:'center'}}>Show result</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
             
         </View>
     )

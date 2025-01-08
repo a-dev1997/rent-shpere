@@ -14,7 +14,7 @@ const Input = ({ label, placeholder, secure,handlechange,value }) => {
 
   return (
     <View >
-      <Text style={{ marginVertical: 10, color: "#888888", fontWeight: 400, fontSize: 14 }}>
+      <Text style={{ marginVertical: 5, color: "#888888", fontWeight: 400, fontSize: 14 }}>
         {label}
       </Text>
       <View style={styles.inputContainer}>

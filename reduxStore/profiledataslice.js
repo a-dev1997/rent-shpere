@@ -9,7 +9,7 @@ export const fetchProfile = createAsyncThunk('profiledata', async () => {
         const response = await AsyncStorage.getItem('user');
         if (response) {
             const user = JSON.parse(response); // Parse the user object from AsyncStorage
-
+               
             // Fetch profile data using the token from AsyncStorage
             const profile = await Axios.get('https://rentsphere.onavinfosolutions.com/api/profile-data', {
                 headers: {

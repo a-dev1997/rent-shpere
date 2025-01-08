@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { ScrollView, Text, View,TouchableOpacity } from "react-native"
 
 import LinearGradient from "react-native-linear-gradient";
@@ -5,7 +6,7 @@ import LinearGradient from "react-native-linear-gradient";
 
 
 const AddProperty=()=>{
-
+const nav=useNavigation()
     return(
         <View style={{flex:1,backgroundColor:'white',padding:20}}>
            <View>
@@ -17,7 +18,7 @@ const AddProperty=()=>{
             </Text>
            </View>
            <View>
-           <TouchableOpacity style={{}} onPress={() => setActivefilter('All')}>
+           <TouchableOpacity style={{}} onPress={() =>{nav.navigate('Propertyform')} }>
               <LinearGradient colors={['#315EE7', '#6246EA']} style={{ borderRadius: 10, marginHorizontal: 10, marginVertical: 10 }}>
                 <Text style={{ color: 'white', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}>
                   List property for rent

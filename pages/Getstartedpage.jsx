@@ -15,8 +15,10 @@ const GetStarted=()=>{
     const dispatch=useDispatch();
     const {propdata}=useSelector((state)=>state.getproperties)
     const {data}=useSelector((state)=>state.userInfo)
+    const {catData}=useSelector((state)=>state.category)
     console.log(propdata)
     console.log(data)
+    console.log('dkfjd'+catData)
  useEffect(()=>{
     dispatch(fetchUserData())
     dispatch(fetchProperties())

@@ -7,6 +7,7 @@ export const fetchProperties = createAsyncThunk(
   async (page) => {
     // Fetch data for the requested page
     const response = await axios.get(`https://rentsphere.onavinfosolutions.com/api/properties/?page=${page}`);
+    
     return {
       data: response.data.data, // Assuming `response.data.data` contains the array of properties
       currentPage: response.data.current_page,

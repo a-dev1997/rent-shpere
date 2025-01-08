@@ -10,7 +10,6 @@ const store=configureStore({
     reducer: {
       getproperties:getProperties,
         userInfo: userDataReducer,
-      
         getcurrentlocation:location,
         userProfile:profiledata,
         userWishlist:wishlist,

@@ -8,6 +8,7 @@ export const fetchCatData = createAsyncThunk('category/fetchCatData', async () =
   // Fetch the data directly
   const response = await fetch('https://rentsphere.onavinfosolutions.com/api/property-category');
   const data = await response.json();
+  console.log('category form slice'+ data)
   return data;
 });
 

@@ -16,6 +16,7 @@ import PropertyVeiw from "./pages/Propertyview";
 import Wishlist from "./pages/Wishlistpage";
 import SeeAll from "./pages/Seeallpage";
 import AddProperty from "./pages/Addproperty";
+import PropertyForm from "./pages/Proppertyform";
 
  
 
@@ -30,6 +31,7 @@ function  RootStack(){
     <Stack.Screen name="Mytabs" component={MyTabs} />
     <Stack.Screen name="Propertyview" component={PropertyVeiw} />
     <Stack.Screen name="Seeall" component={SeeAll} />
+    <Stack.Screen name="Propertyform" component={PropertyForm} />
     
   </Stack.Navigator>
   )
