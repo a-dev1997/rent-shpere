@@ -9,6 +9,7 @@ import { fetchCatData } from "../reduxStore/categorydataslice";
 import { fetchCurrentlocation } from "../reduxStore/currentlocationslice";
 import { fetchProfile } from "../reduxStore/profiledataslice";
 import { fetchWishlist } from "../reduxStore/wishlistslice";
+import { fetchStates } from "../reduxStore/getstatesslice";
 const GetStarted=()=>{
 
     const nav=useNavigation();
@@ -26,6 +27,7 @@ const GetStarted=()=>{
     dispatch(fetchCurrentlocation())
     dispatch(fetchProfile())
     dispatch(fetchWishlist())
+    dispatch(fetchStates())
    console.log('render')
   },[])
     return(
