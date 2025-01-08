@@ -15,6 +15,8 @@ import Profile from "./pages/Profilepage";
 import PropertyVeiw from "./pages/Propertyview";
 import Wishlist from "./pages/Wishlistpage";
 import SeeAll from "./pages/Seeallpage";
+import AddProperty from "./pages/Addproperty";
+
  
 
 function  RootStack(){
@@ -28,6 +30,7 @@ function  RootStack(){
     <Stack.Screen name="Mytabs" component={MyTabs} />
     <Stack.Screen name="Propertyview" component={PropertyVeiw} />
     <Stack.Screen name="Seeall" component={SeeAll} />
+    
   </Stack.Navigator>
   )
 }
@@ -78,6 +81,21 @@ function MyTabs() {
           )
       }
       }} name="Message" component={Message} />
+       <Tab.Screen options={{
+         tabBarIcon:({focused})=>{
+          return(
+              
+              <View style={{justifyContent:'center',width:'100%'}}>
+                  <Image  style={{height:50,width:50}} resizeMode="contain"  source={
+                    focused
+                      ? require('./assets/appimages/chat-icon-active.png') // Active image
+                      : require('./assets/appimages/addproperty.png') // Inactive image
+                  }/>
+                  {/* <Text style={{color:'white',fontSize:8,textAlign:'center'}}>Home</Text> */}
+              </View>
+          )
+      }
+      }} name="Addproperty" component={AddProperty} />
 
 <Tab.Screen options={{
          tabBarIcon:({focused})=>{
@@ -94,6 +112,7 @@ function MyTabs() {
           )
       }
       }} name="Wishlist" component={Wishlist} />
+      
        <Tab.Screen options={{
          tabBarIcon:({focused})=>{
           return(
@@ -113,6 +132,8 @@ function MyTabs() {
     </Tab.Navigator>
   );
 }
+
+
 
 const App=()=>{
 

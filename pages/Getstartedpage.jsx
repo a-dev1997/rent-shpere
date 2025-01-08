@@ -13,7 +13,10 @@ const GetStarted=()=>{
 
     const nav=useNavigation();
     const dispatch=useDispatch();
-    
+    const {propdata}=useSelector((state)=>state.getproperties)
+    const {data}=useSelector((state)=>state.userInfo)
+    console.log(propdata)
+    console.log(data)
  useEffect(()=>{
     dispatch(fetchUserData())
     dispatch(fetchProperties())

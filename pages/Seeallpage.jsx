@@ -1,16 +1,35 @@
-import { ScrollView ,View,TouchableOpacity,Text,StyleSheet,Image} from "react-native"
+import { ScrollView ,View,TouchableOpacity,Text,StyleSheet,Image,TextInput} from "react-native"
 import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 import { BASE_ASSET } from "../config";
+import { useNavigation } from "@react-navigation/native";
 
 
 const SeeAll=()=>{
+  const nav=useNavigation()
 const {catData,catStatus}=useSelector((state)=>state.category);
 const {propdata,propstatus}=useSelector((state)=>state.getproperties)
 
     return(
-        <View style={{flex:1}}>
-            <View style={{paddingVertical:10}}>
+        <View style={{flex:8}}>
+         <View style={{flex:0.7,flexDirection:'row',padding:5,justifyContent:'space-between',alignItems:'center',width:'100%'}}>
+          <TextInput style={{backgroundColor:'white',width:'80%',borderRadius:70,height:50,paddingHorizontal:10}}  placeholder="Search properties"  />
+          <TouchableOpacity>
+                                
+                                <LinearGradient
+                                      colors={ ['#315EE7', '#6246EA']}
+                                      style={{borderRadius:20,marginHorizontal:10,marginVertical:10}}
+                                    >
+                                      <Text
+                                       style={{color:'white',fontWeight:700,fontSize:14,fontStyle:'italic',paddingHorizontal:15,paddingVertical:10}}
+                                      >
+                                       filter
+                                      </Text>
+                                    </LinearGradient>
+                      
+                                      </TouchableOpacity>
+         </View>  
+            {/* <View style={{paddingVertical:10}}>
 
             
             <ScrollView horizontal={true}>
@@ -47,13 +66,21 @@ const {propdata,propstatus}=useSelector((state)=>state.getproperties)
                     )
                 })}
             </ScrollView>
-            </View>
-            <View style={{padding:10}}>
+            </View> */}
+            <View style={{flex:7.5,padding:10,backgroundColor:'white',borderTopLeftRadius:10,borderTopRightRadius:10}}>
+              <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+                <Text style={{fontWeight:500,fontSize:18,color:'black'}}>total properties</Text>
+                <View style={{flexDirection:'row'}}>
+                <Image  source={require('../assets/appimages/sort.png')} />
+                <Text>sort</Text>
+                </View>
+               
+              </View>
             <ScrollView >
-        { propstatus=='succeeded' ? propdata?.data?.map((val,index)=>{
+        { propstatus=='succeeded' ? propdata?.map((val,index)=>{
          
             return(
-                <TouchableOpacity onPress={()=>{nav.navigate('Propertyview',{index:index})}} key={index} style={styles.cardContainer}>
+                <TouchableOpacity onPress={()=>{nav.navigate('Propertyview',{id:val.id})}} key={index} style={styles.cardContainer}>
   <Image
     style={styles.cardImage}
     source={{ uri: `${BASE_ASSET}uploads/propertyImages/${val.featured_image}` }}

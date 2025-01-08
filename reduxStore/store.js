@@ -8,12 +8,13 @@ import wishlist from './wishlistslice'
 
 const store=configureStore({
     reducer: {
+      getproperties:getProperties,
         userInfo: userDataReducer,
-        getproperties:getProperties,
-        category:categorydata,
+      
         getcurrentlocation:location,
         userProfile:profiledata,
-        userWishlist:wishlist
+        userWishlist:wishlist,
+        category:categorydata,
       },
 })
 

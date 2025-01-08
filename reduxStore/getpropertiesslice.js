@@ -23,6 +23,7 @@ const userData = createSlice({
     properror: null,
     currentPage: 1, // Track the current page
     hasMore: true, // Flag to determine if more data is available
+    lastPage:1
   },
 
   extraReducers: (builder) => {
@@ -36,6 +37,7 @@ const userData = createSlice({
         state.propdata = [...state.propdata,...action.payload.data];
         // Update the current page and determine if there are more pages
         state.currentPage = action.payload.currentPage;
+        state.lastPage=action.payload.lastPage;
         state.hasMore = action.payload.currentPage < action.payload.lastPage;
       })
       .addCase(fetchProperties.rejected, (state, action) => {
