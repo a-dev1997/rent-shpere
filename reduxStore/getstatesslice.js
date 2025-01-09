@@ -14,7 +14,7 @@ export const fetchStates = createAsyncThunk('states', async () => {
 
 // Define the slice
 const statesDataSlice = createSlice({
-  name: 'category',
+  name: 'statesData',
   initialState: {
     statesData: null,
     statesStatus: 'idle', // typo fixed: 'idel' -> 'idle'

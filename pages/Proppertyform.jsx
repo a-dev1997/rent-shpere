@@ -1,10 +1,11 @@
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,Image } from "react-native";
 import Input from "../component/input";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
 import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 import { useState } from "react";
+import DocumentPicker from 'react-native-document-picker'
 
 
 
@@ -12,14 +13,24 @@ const PropertyForm = () => {
   const { catData, catStatus } = useSelector((state) => state.category);
   console.log('Categories:', JSON.stringify(catData));
   const [gradientColors, setGradientColors] = useState(['green', 'red']); // Ini
-  const { control, handleSubmit,watch, formState: { errors } } = useForm();
+  const { control, handleSubmit,watch, formState: { errors } } = useForm(
+    {
+      defaultValues: {
+        features: [], // Initialize as an empty array
+      },
+    }
+  );
  const {statesData,statesStatus}=useSelector((state)=>state.statesData)
  const selectedItems = watch("selectedItems", []);
+
+ const [images,setImages]=useState(null);
  console.log("Form Errors:", errors);
 
   // Handle form submission
   const onSubmit = (data) => {
     console.log("Form Submitted:", data);
+    
+    handleUpload(data)
      handleSubmit(data); // Assuming handleLogin is defined elsewhere
   };
  
@@ -49,38 +60,155 @@ const PropertyForm = () => {
   );
 
 
-  const customCheckbox = ( isChecked, onToggle, label ) => {
-    // const borderRadius = shape === 'circle' ? size / 2 : shape === 'square' ? 0 : size / 4; // Conditional shape logic
+ 
+
+  const handleImages=async(onChange)=>{
+    try {
+      const res  = await DocumentPicker.pick({
+          type: [DocumentPicker.types.images], // You can specify file types like .pdf, .docx, etc.
+          allowMultiSelection:true
+      });
+setImages(res)
+onChange(res);
+      console.log('Picked document2:',images );
+  } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+          console.log('User cancelled the picker');
+      } else {
+          console.log('Unknown error: ', err);
+      }
+  }
+  }
+
+
   
-    return (
-      <TouchableOpacity onPress={onToggle} style={{ flexDirection: 'row', alignItems: 'center' ,flexWrap:"wrap"}}>
-       
-          <LinearGradient
-        colors={isChecked?['#315EE7', '#6246EA']:['white','white']}
-        style={{ borderRadius: 20,borderWidth:1,borderColor:isChecked?'':'black' }}
-      >
-        <Text
-          style={{ color:isChecked? 'white':'black', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}
-        >
-          {label}
-        </Text>
-      </LinearGradient>
-        {/* </View> */}
-        
-      </TouchableOpacity>
-    );
+  // Checkbox options
+  const checkboxOptions = [
+    { label: 'Wi-Fi', value: 'wifi' },
+    { label: 'Pool', value: 'pool' },
+    { label: 'Gym', value: 'gym' },
+    { label: 'Parking', value: 'parking' },
+  ];
+
+   // Handle form data upload
+   const handleUpload = async (data) => {
+    const formData = new FormData();
+
+    // Append images to FormData (if images are selected)
+    if (images) {
+      images.forEach((file) => {
+        formData.append('images', {
+          uri: file.uri,
+          type: file.type, // MIME type of the file
+          name: file.name, // File name
+        });
+      });
+    }
+
+    // Append feature image (if applicable)
+    // if (featureImg) {
+    //   formData.append('feature_image', featureImg[0]);
+    // }
+
+     // Convert features array into a string, if it's an array
+  if (Array.isArray(data.features)) {
+    formData.append('features', data.features.join(',')); // Join the array into a string
+  } else {
+    formData.append('features', data.features); // If it's already a string, just append it
+  }
+    // Append other form data
+    formData.append("category_id", data.category_id);
+    formData.append("property_name", data.propertyName);
+    formData.append("price", data.price);
+    formData.append("description", data.description);
+    formData.append("phone", data.phone);
+    // formData.append("features", data.features);
+    formData.append("zip_code", data.zipcode);
+    formData.append("bathroom", data.bathroom);
+    formData.append("construction_status", data.construction);
+    formData.append("maintenance", data.maintenance);
+    formData.append("super_builtup_area", data.builtup);
+    formData.append("floors", data.floor);
+    formData.append("bedrooms", data.bedroom);
+    formData.append("total_floors", data.total);
+    formData.append("carparking", data.carparking);
+    formData.append("project_name", data.project);
+    formData.append("state", data.selectedState);
+    formData.append("listed_by", data.listedby);
+    formData.append("facing", data.facing);
+    formData.append("status", data.status);
+    formData.append("payment_type", data.payment);
+    formData.append("address", data.address);
+    formData.append("carpet_area", data.carpet);
+    formData.append("city", data.city);
+    formData.append("furnishing", data.furnishing);
+    formData.append('user_id', data.userId); // Assuming userId comes from form data
+
+    console.log('Form Data:', formData);
+
+    // Make the upload request
+    fetch('https://rentsphere.onavinfosolutions.com/api/property-added-to-user', {
+      method: 'post',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        console.log('Upload Result:', result);
+      })
+      .catch((err) => {
+        console.log('Upload Error:', err);
+      });
   };
+
 
   return (
     <View style={{ backgroundColor: 'white', flex: 1, padding: 10 }}>
       <ScrollView>
         <Text style={{ fontWeight: '500', fontSize: 20, color: 'black' }}>Add Property</Text>
 
+      {/* <Controller
+      control={control}
+      name="featureImage"
 
-        <TouchableOpacity style={styles.uploadButton} onPress={() => console.log('Upload clicked')}>
-        <Text style={styles.uploadText}>Upload</Text>
+         render={({field: {onChange,value}})=>(
+         <TouchableOpacity onPress={()=>{handleImagePicker(onChange)}} style={[styles.uploadButton,{borderStyle:value?'':'dashed'}]} >
+        
+        {value ? 
+            // <Text style={styles.fileInfo}>{`Selected: ${value[0]?.name}`}</Text>
+            <Image style={{width:'100%',height:'100%'}} source={{uri:value[0].uri}} />:<Text style={styles.uploadText}>Upload</Text>
+          }
       </TouchableOpacity>
-
+  )}
+        /> */}
+<View  style={{backgroundColor:'#F2F3F3',flexDirection:'row',justifyContent:'flex-start',flexWrap:'wrap',marginVertical:10,borderRadius:10}}>
+{images!=null ? 
+           images?.map((val,index)=>{
+            return(
+<Image key={index} style={{width:100,height:100,margin:5}} source={{uri:val.uri}} />)
+           }):''
+           
+            
+}
+<Controller
+      control={control}
+      name="images"
+      rules={{
+        required: 'please upload atleast one image',
+      }}
+         render={({field: {onChange,value}})=>(
+         <TouchableOpacity onPress={()=>{handleImages(onChange)}} style={[styles.uploadButton,{margin:5}]} >
+        <Text style={styles.uploadText}>Upload</Text>
+        {/* {value && (
+            <Text style={styles.fileInfo}>{`Selected: ${value[0]?.name}`}</Text>
+          )} */}
+      </TouchableOpacity>
+  )}
+        />
+        {errors.images && <Text style={styles.errorText}>{errors.images.message}</Text>}
+</View>
         {/* Property name input */}
         <Controller
           control={control}
@@ -189,7 +317,8 @@ const PropertyForm = () => {
           )}
         />
         {errors.address && <Text style={styles.errorText}>{errors.address.message}</Text>}
-
+        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+          <View style={{width:'48%'}}>
            {/* city name input */}
          <Controller
           control={control}
@@ -202,6 +331,32 @@ const PropertyForm = () => {
           )}
         />
         {errors.city && <Text style={styles.errorText}>{errors.city.message}</Text>}
+        </View>
+         <View style={{width:'48%'}}>
+          
+          {/* zipcode name input with numeric validation */}
+          <Controller
+          control={control}
+          name="zip_code"
+          rules={{
+            required: 'zip code is required',
+            validate: (value) => {
+              // Regular expression to check if the value contains only numeric values
+              const regex = /^[0-9]+$/;
+              if (!regex.test(value)) {
+                return 'zip code must be numeric';
+              }
+              return true; // Return true if validation passes
+            },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="Zip code" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }} value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.zip_code && <Text style={styles.errorText}>{errors.zip_code.message}</Text>}
+         </View>
+
+        </View>
 
          {/* Select category */}
          <Controller
@@ -228,26 +383,6 @@ const PropertyForm = () => {
         {errors.state && <Text style={styles.errorText}>{errors.state.message}</Text>}
 
 
-          {/* zipcode name input with numeric validation */}
-          <Controller
-          control={control}
-          name="zip_code"
-          rules={{
-            required: 'zip code is required',
-            validate: (value) => {
-              // Regular expression to check if the value contains only numeric values
-              const regex = /^[0-9]+$/;
-              if (!regex.test(value)) {
-                return 'zip code must be numeric';
-              }
-              return true; // Return true if validation passes
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput placeholder="Zip code" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }} value={value} onChangeText={onChange} />
-          )}
-        />
-        {errors.zip_code && <Text style={styles.errorText}>{errors.zip_code.message}</Text>}
 
         <View style={{flexDirection:'row',justifyContent:'space-between'}}>
 
@@ -398,6 +533,36 @@ render={({ field: { onChange, onBlur, value } }) => (
 
 
 </View>
+ 
+ <Text style={{marginTop:5,fontWeight:500}}>Facilities</Text>
+{errors.features && <Text style={styles.errorText}>{errors.features.message}</Text>}
+   {/* Controller for managing checkbox group */}
+   <Controller
+        control={control}
+        name="features"
+        rules={{
+          required: 'please select ',
+        }}
+        render={({ field: { onChange, value = [] } }) => (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center',marginTop:10,flexWrap:'wrap',width:'99%' }}>
+           {checkboxOptions.map((option) => (
+              <CustomCheckbox
+                key={option.value}
+                label={option.label}
+                value={value.includes(option.value)} // Check if the option is selected
+                onChange={(checked) => {
+                  const newValue = checked
+                    ? [...value, option.value] // Add option if checked
+                    : value.filter((v) => v !== option.value); // Remove option if unchecked
+                  onChange(newValue); // Update form state with new array
+                }}
+                customWidth={100} // Optionally pass custom width for each checkbox
+              />
+            ))}
+          </View>
+        )}
+      />
+    
  {/* RadioButton with React Hook Form Controller */}
 <Text style={{marginTop:5,fontWeight:500}}>Facing</Text>
 {errors.facing && <Text style={styles.errorText}>{errors.facing.message}</Text>}
@@ -509,6 +674,18 @@ render={({ field: { onChange, onBlur, value } }) => (
 
           )}
         />
+           {/* Property name input */}
+           <Controller
+          control={control}
+          name="project_name"
+          rules={{
+            required: 'project name is required',
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="Project name" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50 ,marginVertical:5}} value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.project_name && <Text style={styles.errorText}>{errors.project_name.message}</Text>}
         
 
          <TouchableOpacity
@@ -571,8 +748,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   uploadButton: {
-    width: 200,
-    height: 200,
+    
+    height: 100,
+    width:100,
     borderWidth: 2,
     borderStyle: 'dashed', // This makes the border dotted
     borderColor: '#315EE7', // You can change the color here
@@ -583,8 +761,44 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     color: '#315EE7', // Text color for upload
-    fontSize: 18,
+    fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'center',
   },
 });
+
+// CustomCheckbox component
+const CustomCheckbox = ({ label, value, onChange, customWidth }) => {
+  return (
+    <TouchableOpacity
+      style={{
+        marginVertical: 5,
+        width: customWidth,
+      }}
+      onPress={() => onChange(!value)} // Toggle the checkbox value when clicked
+    >
+      <LinearGradient
+        colors={value ? ['#315EE7', '#6246EA'] : ['white', 'white']}
+        style={{
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: value ? 'white' : 'black',
+          backgroundColor: value ? 'transparent' : 'white', // Adjust for color based on state
+        }}
+      >
+        <Text
+          style={{
+            color: value ? 'white' : 'black',
+            fontWeight: '700',
+            fontSize: 14,
+            fontStyle: 'italic',
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+          }}
+        >
+          {label}
+        </Text>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+};
