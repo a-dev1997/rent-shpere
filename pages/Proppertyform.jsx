@@ -12,33 +12,30 @@ const PropertyForm = () => {
   const { catData, catStatus } = useSelector((state) => state.category);
   console.log('Categories:', JSON.stringify(catData));
   const [gradientColors, setGradientColors] = useState(['green', 'red']); // Ini
-  const { control, handleSubmit, formState: { errors } } = useForm();
+  const { control, handleSubmit,watch, formState: { errors } } = useForm();
  const {statesData,statesStatus}=useSelector((state)=>state.statesData)
+ const selectedItems = watch("selectedItems", []);
  console.log(statesData)
   // Handle form submission
   const onSubmit = (data) => {
     console.log("Form Submitted:", data);
     handleLogin(data); // Assuming handleLogin is defined elsewhere
   };
-  // Handle gradient color change on click
-  const handlePress = () => {
-    setGradientColors(['blue', 'purple']); // Change gradient colors on press
-  };
+ 
 
-  const renderCustomRadioButton = (value, label, selectedValue, onChange) => (
+  const renderCustomRadioButton = (value, label, selectedValue, onChange,customWidth) => (
     <TouchableOpacity
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
        
-        width: '45%',
-
+        marginVertical:5,
+        width:customWidth
+ 
       }}
       onPress={() => onChange(value)}
     >
       <LinearGradient
         colors={selectedValue === value?['#315EE7', '#6246EA']:['white','white']}
-        style={{ borderRadius: 20,width:'100%',borderWidth:1,borderColor:selectedValue === value?'black':'' }}
+        style={{ borderRadius: 20,borderWidth:1,borderColor:selectedValue === value?'white':'black' }}
       >
         <Text
           style={{ color:selectedValue === value? 'white':'black', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}
@@ -77,6 +74,11 @@ const PropertyForm = () => {
     <View style={{ backgroundColor: 'white', flex: 1, padding: 10 }}>
       <ScrollView>
         <Text style={{ fontWeight: '500', fontSize: 20, color: 'black' }}>Add Property</Text>
+
+
+        <TouchableOpacity style={styles.uploadButton} onPress={() => console.log('Upload clicked')}>
+        <Text style={styles.uploadText}>Upload</Text>
+      </TouchableOpacity>
 
         {/* Property name input */}
         <Controller
@@ -136,16 +138,17 @@ const PropertyForm = () => {
           )}
         />
         {errors.price && <Text style={styles.errorText}>{errors.price.message}</Text>}
+        <Text style={{marginTop:5,fontWeight:500}}>Payment type</Text>
         {/* RadioButton with React Hook Form Controller */}
         <Controller
           control={control}
-          name="radioOption"
-          defaultValue="first"
+          name="payment_type"
+          // defaultValue="first"
           render={({ field: { onChange, value } }) => (
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignContent: 'center',marginTop:10 }}>
-              {renderCustomRadioButton('month', 'month', value, onChange)}
-              {renderCustomRadioButton('year', 'year', value, onChange)}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '99%', alignContent: 'center',marginTop:10 }}>
+              {renderCustomRadioButton('month', 'month', value, onChange,'45%')}
+              {renderCustomRadioButton('year', 'year', value, onChange,'45%')}
 
               {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <RadioButton value="third" />
@@ -155,6 +158,7 @@ const PropertyForm = () => {
 
           )}
         />
+         {errors.payment_type && <Text style={styles.errorText}>{errors.payment_type.message}</Text>}
          {/* Description name input */}
          <Controller
           control={control}
@@ -240,26 +244,267 @@ const PropertyForm = () => {
         />
         {errors.zip_code && <Text style={styles.errorText}>{errors.zip_code.message}</Text>}
 
-  {/* Custom Checkbox with React Hook Form */}
-  <Controller
-        control={control}
-        name="facilities"
-        defaultValue={false}
-        rules={{
-          required: 'You must select the checkbox.',
-        }}
-        render={({ field: { onChange, value } }) => (
-          <View style={{ flexDirection: 'row', alignItems: 'center',flexWrap:'wrap' }}>
-          {/* Use the CustomCheckbox function */}
-          {customCheckbox(value, () => onChange(!value), 'wifi')}
-          {customCheckbox(value, () => onChange(!value), 'Ari condition')}
-          {customCheckbox(value, () => onChange(!value), 'security')}
+        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+
+                 {/* bedroom name input with numeric validation */}
+          <Controller
+          control={control}
+          name="bedrooms"
+          rules={{
+            required: 'zip code is required',
+            validate: (value) => {
+              // Regular expression to check if the value contains only numeric values
+              const regex = /^[0-9]+$/;
+              if (!regex.test(value)) {
+                return ' this must be numeric';
+              }
+              return true; // Return true if validation passes
+            },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="bedrooms" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 ,width:'48%'}}  value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.bedrooms && <Text style={styles.errorText}>{errors.bedrooms.message}</Text>}
+
+           {/* bathrooms name input with numeric validation */}
+           <Controller
+          control={control}
+          name="bathrooms"
+          rules={{
+            required: 'this is required',
+            validate: (value) => {
+              // Regular expression to check if the value contains only numeric values
+              const regex = /^[0-9]+$/;
+              if (!regex.test(value)) {
+                return ' this must be numeric';
+              }
+              return true; // Return true if validation passes
+            },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="bathrooms" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10,width:'48%' }} value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.bathrooms && <Text style={styles.errorText}>{errors.bathrooms.message}</Text>}
+
+        
+
         </View>
 
-        )}
-      />
+        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+
+{/* super built up area name input with numeric validation */}
+<Controller
+control={control}
+name="super_builtup_area"
+rules={{
+required: 'zip code is required',
+validate: (value) => {
+// Regular expression to check if the value contains only numeric values
+const regex = /^[0-9]+$/;
+if (!regex.test(value)) {
+return ' this must be numeric';
+}
+return true; // Return true if validation passes
+},
+}}
+render={({ field: { onChange, onBlur, value } }) => (
+<TextInput placeholder="BuiltUp area" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 ,width:'48%'}}  value={value} onChangeText={onChange} />
+)}
+/>
+{errors.super_builtup_area && <Text style={styles.errorText}>{errors.super_builtup_area.message}</Text>}
+
+{/* carpet_area name input with numeric validation */}
+<Controller
+control={control}
+name="carpet_area"
+rules={{
+required: 'this is required',
+validate: (value) => {
+// Regular expression to check if the value contains only numeric values
+const regex = /^[0-9]+$/;
+if (!regex.test(value)) {
+return ' this must be numeric';
+}
+return true; // Return true if validation passes
+},
+}}
+render={({ field: { onChange, onBlur, value } }) => (
+<TextInput placeholder="Carpet area" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10,width:'48%' }} value={value} onChangeText={onChange} />
+)}
+/>
+{errors.carpet_area && <Text style={styles.errorText}>{errors.carpet_area.message}</Text>}
 
 
+
+</View>
+
+<View style={{flexDirection:'row',justifyContent:'space-between'}}>
+
+{/* floors up area name input with numeric validation */}
+<Controller
+control={control}
+name="floors"
+rules={{
+required: 'zip code is required',
+validate: (value) => {
+// Regular expression to check if the value contains only numeric values
+const regex = /^[0-9]+$/;
+if (!regex.test(value)) {
+return ' this must be numeric';
+}
+return true; // Return true if validation passes
+},
+}}
+render={({ field: { onChange, onBlur, value } }) => (
+<TextInput placeholder="Floor" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 ,width:'48%'}}  value={value} onChangeText={onChange} />
+)}
+/>
+{errors.floors && <Text style={styles.errorText}>{errors.floors.message}</Text>}
+
+{/* total floors name input with numeric validation */}
+<Controller
+control={control}
+name="total_floors"
+rules={{
+required: 'this is required',
+validate: (value) => {
+// Regular expression to check if the value contains only numeric values
+const regex = /^[0-9]+$/;
+if (!regex.test(value)) {
+return ' this must be numeric';
+}
+return true; // Return true if validation passes
+},
+}}
+render={({ field: { onChange, onBlur, value } }) => (
+<TextInput placeholder="Total floors" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10,width:'48%' }} value={value} onChangeText={onChange} />
+)}
+/>
+{errors.total_floors && <Text style={styles.errorText}>{errors.total_floors.message}</Text>}
+
+
+
+</View>
+<Text style={{marginTop:5,fontWeight:500}}>Facing</Text>
+        {/* RadioButton with React Hook Form Controller */}
+        <Controller
+          control={control}
+          name="Facing"
+          defaultValue="first"
+          render={({ field: { onChange, value } }) => (
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignContent: 'center',marginTop:10,flexWrap:'wrap',width:'99%' }}>
+              {renderCustomRadioButton('north', 'North', value, onChange)}
+              {renderCustomRadioButton('south', 'South', value, onChange)}
+              {renderCustomRadioButton('east', 'East', value, onChange)}
+              {renderCustomRadioButton('west', 'West', value, onChange)}
+              {renderCustomRadioButton('north-east', 'North-East', value, onChange)}
+              {renderCustomRadioButton('north-west', 'North-west', value, onChange)}
+              {renderCustomRadioButton('south-east', 'South-East', value, onChange)}
+              {renderCustomRadioButton('south-west', 'South-West', value, onChange)}
+
+              {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <RadioButton value="third" />
+              <Text>Third Option</Text>
+            </View> */}
+            </View>
+
+          )}
+        />
+         {errors.payment_type && <Text style={styles.errorText}>{errors.payment_type.message}</Text>}
+
+            {/* furnishing by with React Hook Form Controller */}
+            <Text style={{marginTop:5,fontWeight:500}}>Furnishing</Text>
+        <Controller
+          control={control}
+          name="furnishing"
+          // defaultValue="first"
+          render={({ field: { onChange, value } }) => (
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '99%', alignContent: 'center',marginTop:10 }}>
+              {renderCustomRadioButton('furnished', 'Furnished', value, onChange)}
+              {renderCustomRadioButton('fully-furnished', 'Fully-furnished', value, onChange)}
+              {renderCustomRadioButton('unfurnished', 'Unfurnished', value, onChange)}
+
+              {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <RadioButton value="third" />
+              <Text>Third Option</Text>
+            </View> */}
+            </View>
+
+          )}
+        />
+         {errors.furnishing && <Text style={styles.errorText}>{errors.furnishing.message}</Text>}
+          
+
+
+          {/* listed by with React Hook Form Controller */}
+          <Text style={{marginTop:5,fontWeight:500}}>Listed by</Text>
+        <Controller
+          control={control}
+          name="listed_by"
+          // defaultValue="first"
+          render={({ field: { onChange, value } }) => (
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '99%', alignContent: 'center',marginTop:10 }}>
+              {renderCustomRadioButton('agent', 'Agent', value, onChange,'45%')}
+              {renderCustomRadioButton('owner', 'Owner', value, onChange,'45%')}
+
+              {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <RadioButton value="third" />
+              <Text>Third Option</Text>
+            </View> */}
+            </View>
+
+          )}
+        />
+         {errors.listed_by && <Text style={styles.errorText}>{errors.listed_by.message}</Text>}
+
+         <Text style={{marginTop:5,fontWeight:500}}>Status</Text>
+        {/* RadioButton with React Hook Form Controller */}
+        <Controller
+          control={control}
+          name="status"
+          // defaultValue="first"
+          render={({ field: { onChange, value } }) => (
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '99%', alignContent: 'center',marginTop:10 }}>
+              {renderCustomRadioButton('active', 'Active', value, onChange,'45%')}
+              {renderCustomRadioButton('inactive', 'Inactive', value, onChange,'45%')}
+
+              {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <RadioButton value="third" />
+              <Text>Third Option</Text>
+            </View> */}
+            </View>
+
+          )}
+        />
+         {errors.payment_type && <Text style={styles.errorText}>{errors.payment_type.message}</Text>}
+
+         <TouchableOpacity
+      style={{
+       
+        marginVertical:5,
+        
+ 
+      }}
+      onPress={() => onChange(value)}
+    >
+      <LinearGradient
+        colors={['#315EE7', '#6246EA']}
+        style={{ borderRadius: 20,}}
+      >
+        <Text
+          style={{ color:'white', fontWeight: 700, fontSize: 20, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10,textAlign:'center' }}
+        >
+          Submit
+        </Text>
+      </LinearGradient>
+
+    </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -297,5 +542,22 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 16,
+  },
+  uploadButton: {
+    width: 200,
+    height: 200,
+    borderWidth: 2,
+    borderStyle: 'dashed', // This makes the border dotted
+    borderColor: '#315EE7', // You can change the color here
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10, // Rounded corners
+    backgroundColor: '#F4F8FF', // Light background
+  },
+  uploadText: {
+    color: '#315EE7', // Text color for upload
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
