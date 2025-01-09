@@ -15,11 +15,12 @@ const PropertyForm = () => {
   const { control, handleSubmit,watch, formState: { errors } } = useForm();
  const {statesData,statesStatus}=useSelector((state)=>state.statesData)
  const selectedItems = watch("selectedItems", []);
- console.log(statesData)
+ console.log("Form Errors:", errors);
+
   // Handle form submission
   const onSubmit = (data) => {
     console.log("Form Submitted:", data);
-    handleLogin(data); // Assuming handleLogin is defined elsewhere
+     handleSubmit(data); // Assuming handleLogin is defined elsewhere
   };
  
 
@@ -138,12 +139,16 @@ const PropertyForm = () => {
           )}
         />
         {errors.price && <Text style={styles.errorText}>{errors.price.message}</Text>}
+           {/* payment with React Hook Form Controller */}
         <Text style={{marginTop:5,fontWeight:500}}>Payment type</Text>
-        {/* RadioButton with React Hook Form Controller */}
+        {errors.payment_type && <Text style={styles.errorText}>{errors.payment_type.message}</Text>}
+     
         <Controller
           control={control}
           name="payment_type"
-          // defaultValue="first"
+          rules={{
+            required: 'please select category', // Category validation rule
+          }}
           render={({ field: { onChange, value } }) => (
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '99%', alignContent: 'center',marginTop:10 }}>
@@ -158,7 +163,7 @@ const PropertyForm = () => {
 
           )}
         />
-         {errors.payment_type && <Text style={styles.errorText}>{errors.payment_type.message}</Text>}
+         
          {/* Description name input */}
          <Controller
           control={control}
@@ -246,12 +251,13 @@ const PropertyForm = () => {
 
         <View style={{flexDirection:'row',justifyContent:'space-between'}}>
 
+          <View style={{width:'48%'}}>
                  {/* bedroom name input with numeric validation */}
           <Controller
           control={control}
           name="bedrooms"
           rules={{
-            required: 'zip code is required',
+            required: ' this field is required',
             validate: (value) => {
               // Regular expression to check if the value contains only numeric values
               const regex = /^[0-9]+$/;
@@ -262,11 +268,12 @@ const PropertyForm = () => {
             },
           }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput placeholder="bedrooms" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 ,width:'48%'}}  value={value} onChangeText={onChange} />
+            <TextInput placeholder="bedrooms" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }}  value={value} onChangeText={onChange} />
           )}
         />
         {errors.bedrooms && <Text style={styles.errorText}>{errors.bedrooms.message}</Text>}
-
+        </View>
+        <View style={{width:'48%'}}>
            {/* bathrooms name input with numeric validation */}
            <Controller
           control={control}
@@ -283,18 +290,19 @@ const PropertyForm = () => {
             },
           }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput placeholder="bathrooms" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10,width:'48%' }} value={value} onChangeText={onChange} />
+            <TextInput placeholder="bathrooms" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }} value={value} onChangeText={onChange} />
           )}
         />
         {errors.bathrooms && <Text style={styles.errorText}>{errors.bathrooms.message}</Text>}
 
-        
+        </View>
 
         </View>
 
         <View style={{flexDirection:'row',justifyContent:'space-between'}}>
 
 {/* super built up area name input with numeric validation */}
+<View style={{width:'48%'}}>
 <Controller
 control={control}
 name="super_builtup_area"
@@ -310,11 +318,12 @@ return true; // Return true if validation passes
 },
 }}
 render={({ field: { onChange, onBlur, value } }) => (
-<TextInput placeholder="BuiltUp area" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 ,width:'48%'}}  value={value} onChangeText={onChange} />
+<TextInput placeholder="BuiltUp area" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }}  value={value} onChangeText={onChange} />
 )}
 />
 {errors.super_builtup_area && <Text style={styles.errorText}>{errors.super_builtup_area.message}</Text>}
-
+</View>
+<View style={{width:'48%'}}>
 {/* carpet_area name input with numeric validation */}
 <Controller
 control={control}
@@ -331,17 +340,18 @@ return true; // Return true if validation passes
 },
 }}
 render={({ field: { onChange, onBlur, value } }) => (
-<TextInput placeholder="Carpet area" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10,width:'48%' }} value={value} onChangeText={onChange} />
+<TextInput placeholder="Carpet area" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }} value={value} onChangeText={onChange} />
 )}
 />
 {errors.carpet_area && <Text style={styles.errorText}>{errors.carpet_area.message}</Text>}
-
+</View>
 
 
 </View>
 
 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
 
+<View style={{width:'48%'}}>
 {/* floors up area name input with numeric validation */}
 <Controller
 control={control}
@@ -358,11 +368,12 @@ return true; // Return true if validation passes
 },
 }}
 render={({ field: { onChange, onBlur, value } }) => (
-<TextInput placeholder="Floor" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 ,width:'48%'}}  value={value} onChangeText={onChange} />
+<TextInput placeholder="Floor" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }}  value={value} onChangeText={onChange} />
 )}
 />
 {errors.floors && <Text style={styles.errorText}>{errors.floors.message}</Text>}
-
+</View>
+<View style={{width:'48%'}}>
 {/* total floors name input with numeric validation */}
 <Controller
 control={control}
@@ -379,20 +390,25 @@ return true; // Return true if validation passes
 },
 }}
 render={({ field: { onChange, onBlur, value } }) => (
-<TextInput placeholder="Total floors" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10,width:'48%' }} value={value} onChangeText={onChange} />
+<TextInput placeholder="Total floors" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }} value={value} onChangeText={onChange} />
 )}
 />
 {errors.total_floors && <Text style={styles.errorText}>{errors.total_floors.message}</Text>}
-
+</View>
 
 
 </View>
+ {/* RadioButton with React Hook Form Controller */}
 <Text style={{marginTop:5,fontWeight:500}}>Facing</Text>
-        {/* RadioButton with React Hook Form Controller */}
+{errors.facing && <Text style={styles.errorText}>{errors.facing.message}</Text>}
+
+       
         <Controller
           control={control}
-          name="Facing"
-          defaultValue="first"
+          name="facing"
+          rules={{
+            required: 'please select ',
+          }}
           render={({ field: { onChange, value } }) => (
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignContent: 'center',marginTop:10,flexWrap:'wrap',width:'99%' }}>
@@ -413,13 +429,16 @@ render={({ field: { onChange, onBlur, value } }) => (
 
           )}
         />
-         {errors.payment_type && <Text style={styles.errorText}>{errors.payment_type.message}</Text>}
-
+         
             {/* furnishing by with React Hook Form Controller */}
             <Text style={{marginTop:5,fontWeight:500}}>Furnishing</Text>
+            {errors.furnishing && <Text style={styles.errorText}>{errors.furnishing.message}</Text>}
         <Controller
           control={control}
           name="furnishing"
+          rules={{
+            required: 'please select one',
+          }}
           // defaultValue="first"
           render={({ field: { onChange, value } }) => (
 
@@ -436,15 +455,19 @@ render={({ field: { onChange, onBlur, value } }) => (
 
           )}
         />
-         {errors.furnishing && <Text style={styles.errorText}>{errors.furnishing.message}</Text>}
+       
           
 
 
           {/* listed by with React Hook Form Controller */}
           <Text style={{marginTop:5,fontWeight:500}}>Listed by</Text>
+          {errors.listed_by && <Text style={styles.errorText}>{errors.listed_by.message}</Text>}
         <Controller
           control={control}
           name="listed_by"
+          rules={{
+            required: 'please select one',
+          }}
           // defaultValue="first"
           render={({ field: { onChange, value } }) => (
 
@@ -460,12 +483,16 @@ render={({ field: { onChange, onBlur, value } }) => (
 
           )}
         />
-         {errors.listed_by && <Text style={styles.errorText}>{errors.listed_by.message}</Text>}
+      
 
          <Text style={{marginTop:5,fontWeight:500}}>Status</Text>
+         {errors.status && <Text style={styles.errorText}>{errors.status.message}</Text>}
         {/* RadioButton with React Hook Form Controller */}
         <Controller
           control={control}
+          rules={{
+            required: 'please select one',
+          }}
           name="status"
           // defaultValue="first"
           render={({ field: { onChange, value } }) => (
@@ -482,7 +509,7 @@ render={({ field: { onChange, onBlur, value } }) => (
 
           )}
         />
-         {errors.payment_type && <Text style={styles.errorText}>{errors.payment_type.message}</Text>}
+        
 
          <TouchableOpacity
       style={{
@@ -491,7 +518,7 @@ render={({ field: { onChange, onBlur, value } }) => (
         
  
       }}
-      onPress={() => onChange(value)}
+      onPress={handleSubmit(onSubmit)}
     >
       <LinearGradient
         colors={['#315EE7', '#6246EA']}
