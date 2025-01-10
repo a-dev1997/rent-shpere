@@ -97,7 +97,7 @@ onChange(res);
     // Append images to FormData (if images are selected)
     if (images) {
       images.forEach((file) => {
-        formData.append('images', {
+        formData.append('images[]', {
           uri: file.uri,
           type: file.type, // MIME type of the file
           name: file.name, // File name
@@ -117,32 +117,32 @@ onChange(res);
     formData.append('features', data.features); // If it's already a string, just append it
   }
     // Append other form data
-    formData.append("category_id", data.category_id);
-    formData.append("property_name", data.propertyName);
+    formData.append("category_id", data.category);
+    formData.append("property_name", data.property_name);
     formData.append("price", data.price);
     formData.append("description", data.description);
-    formData.append("phone", data.phone);
+    formData.append("phone", 1234567890);
     // formData.append("features", data.features);
-    formData.append("zip_code", data.zipcode);
-    formData.append("bathroom", data.bathroom);
-    formData.append("construction_status", data.construction);
+    formData.append("zip_code", data.zip_code);
+    formData.append("bathroom", data.bathrooms);
+    formData.append("construction_status", data.construction_status);
     formData.append("maintenance", data.maintenance);
-    formData.append("super_builtup_area", data.builtup);
-    formData.append("floors", data.floor);
-    formData.append("bedrooms", data.bedroom);
-    formData.append("total_floors", data.total);
-    formData.append("carparking", data.carparking);
-    formData.append("project_name", data.project);
-    formData.append("state", data.selectedState);
-    formData.append("listed_by", data.listedby);
+    formData.append("super_builtup_area", data.super_builtup_area);
+    formData.append("floors", data.floors);
+    formData.append("bedrooms", data.bedrooms);
+    formData.append("total_floors", data.total_floors);
+    formData.append("carparking", 1);
+    formData.append("project_name", data.project_name);
+    formData.append("state", data.state);
+    formData.append("listed_by", data.listed_by);
     formData.append("facing", data.facing);
     formData.append("status", data.status);
-    formData.append("payment_type", data.payment);
+    formData.append("payment_type", data.payment_type);
     formData.append("address", data.address);
-    formData.append("carpet_area", data.carpet);
+    formData.append("carpet_area", data.carpet_area);
     formData.append("city", data.city);
     formData.append("furnishing", data.furnishing);
-    formData.append('user_id', data.userId); // Assuming userId comes from form data
+     // Assuming userId comes from form data
 
     console.log('Form Data:', formData);
 
@@ -382,7 +382,47 @@ onChange(res);
         />
         {errors.state && <Text style={styles.errorText}>{errors.state.message}</Text>}
 
+             {/* sucurity name input with numeric validation */}
+        <Controller
+          control={control}
+          name="maintenance"
+          rules={{
+            required: 'security deposit is required',
+            validate: (value) => {
+              // Regular expression to check if the value contains only numeric values
+              const regex = /^[0-9]+$/;
+              if (!regex.test(value)) {
+                return 'security deposit must be numeric';
+              }
+              return true; // Return true if validation passes
+            },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="Security amount" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }} value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.maintenance && <Text style={styles.errorText}>{errors.maintenance.message}</Text>}
 
+         {/* sucurity name input with numeric validation */}
+         <Controller
+          control={control}
+          name="construction_status"
+          rules={{
+            required: 'construction status is required',
+            // validate: (value) => {
+            //   // Regular expression to check if the value contains only numeric values
+            //   const regex = /^[0-9]+$/;
+            //   if (!regex.test(value)) {
+            //     return 'security deposit must be numeric';
+            //   }
+            //   return true; // Return true if validation passes
+            // },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="construction status ie:ready to move" style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50, marginTop: 10 }} value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.construction_status && <Text style={styles.errorText}>{errors.construction_status.message}</Text>}
 
         <View style={{flexDirection:'row',justifyContent:'space-between'}}>
 
