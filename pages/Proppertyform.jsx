@@ -6,11 +6,15 @@ import { useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 import { useState } from "react";
 import DocumentPicker from 'react-native-document-picker'
-
+import axios from 'axios';
+import { useNavigation } from "@react-navigation/native";
 
 
 const PropertyForm = () => {
+  const nav=useNavigation()
   const { catData, catStatus } = useSelector((state) => state.category);
+  const { data: userInfoData, status } = useSelector((state) => state.userInfo); 
+  const [isLoading, setIsLoading] = useState(false); // Track the loading state
   console.log('Categories:', JSON.stringify(catData));
   const [gradientColors, setGradientColors] = useState(['green', 'red']); // Ini
   const { control, handleSubmit,watch, formState: { errors } } = useForm(
@@ -90,78 +94,95 @@ onChange(res);
     { label: 'Parking', value: 'parking' },
   ];
 
-   // Handle form data upload
-   const handleUpload = async (data) => {
-    const formData = new FormData();
+ 
+// Handle form data upload
+const handleUpload = async (data) => {
+  setIsLoading(true); // Set loading state to true when API starts
+  const formData = new FormData();
 
-    // Append images to FormData (if images are selected)
-    if (images) {
-      images.forEach((file) => {
-        formData.append('images[]', {
-          uri: file.uri,
-          type: file.type, // MIME type of the file
-          name: file.name, // File name
-        });
+  // Append images to FormData (if images are selected)
+  if (images) {
+    images.forEach((file) => {
+      formData.append('images[]', {
+        uri: file.uri,
+        type: file.type, // MIME type of the file
+        name: file.name, // File name
       });
-    }
+    });
+  }
 
-    // Append feature image (if applicable)
-    // if (featureImg) {
-    //   formData.append('feature_image', featureImg[0]);
-    // }
-
-     // Convert features array into a string, if it's an array
+  // Convert features array into a string, if it's an array
   if (Array.isArray(data.features)) {
     formData.append('features', data.features.join(',')); // Join the array into a string
   } else {
     formData.append('features', data.features); // If it's already a string, just append it
   }
-    // Append other form data
-    formData.append("category_id", data.category);
-    formData.append("property_name", data.property_name);
-    formData.append("price", data.price);
-    formData.append("description", data.description);
-    formData.append("phone", 1234567890);
-    // formData.append("features", data.features);
-    formData.append("zip_code", data.zip_code);
-    formData.append("bathroom", data.bathrooms);
-    formData.append("construction_status", data.construction_status);
-    formData.append("maintenance", data.maintenance);
-    formData.append("super_builtup_area", data.super_builtup_area);
-    formData.append("floors", data.floors);
-    formData.append("bedrooms", data.bedrooms);
-    formData.append("total_floors", data.total_floors);
-    formData.append("carparking", 1);
-    formData.append("project_name", data.project_name);
-    formData.append("state", data.state);
-    formData.append("listed_by", data.listed_by);
-    formData.append("facing", data.facing);
-    formData.append("status", data.status);
-    formData.append("payment_type", data.payment_type);
-    formData.append("address", data.address);
-    formData.append("carpet_area", data.carpet_area);
-    formData.append("city", data.city);
-    formData.append("furnishing", data.furnishing);
-     // Assuming userId comes from form data
 
-    console.log('Form Data:', formData);
+  // Append other form data
+  formData.append("category_id", data.category);
+  formData.append("property_name", data.property_name);
+  formData.append("price", data.price);
+  formData.append("description", data.description);
+  formData.append("phone", 1234567890);
+  formData.append("zip_code", data.zip_code);
+  formData.append("bathroom", data.bathrooms);
+  formData.append("construction_status", data.construction_status);
+  formData.append("maintenance", data.maintenance);
+  formData.append("super_builtup_area", data.super_builtup_area);
+  formData.append("floors", data.floors);
+  formData.append("bedrooms", data.bedrooms);
+  formData.append("total_floors", data.total_floors);
+  formData.append("carparking", 1);
+  formData.append("project_name", data.project_name);
+  formData.append("state", data.state);
+  formData.append("listed_by", data.listed_by);
+  formData.append("facing", data.facing);
+  formData.append("status", data.status);
+  formData.append("payment_type", data.payment_type);
+  formData.append("address", data.address);
+  formData.append("carpet_area", data.carpet_area);
+  formData.append("city", data.city);
+  formData.append("furnishing", data.furnishing);
 
-    // Make the upload request
-    fetch('https://rentsphere.onavinfosolutions.com/api/property-added-to-user', {
-      method: 'post',
-      body: formData,
+  console.log('Form Data:', formData);
+
+  try {
+    // Make the upload request using axios
+    const response = await axios.post('https://rentsphere.onavinfosolutions.com/api/property-added-to-user', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      }
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        console.log('Upload Result:', result);
-      })
-      .catch((err) => {
-        console.log('Upload Error:', err);
-      });
-  };
+        'Authorization': `Bearer ${userInfoData.token}`,
+        'Content-Type': 'multipart/form-data', // Set Content-Type as multipart/form-data for file uploads
+      },
+    });
+    
+    console.log('Upload Result:', response.data);
+    // Handle result if necessary
+
+     // Show the BookingSuccessScreen modal on successful upload
+       // Use useNavigation to navigate to the modal
+   if(response.data.message){
+    nav.navigate('showmodal', {
+      message: 'Your booking has been successfully submitted!',
+      buttonname:'back to home',
+      componentId:'Mytabs',
+    });
+  }else{
+
+    nav.navigate('showmodal', {
+      message: 'Your booking has been failed',
+      buttonname:'back to home',
+      componentId:'Mytabs',
+    });
+    
+  }
+  } catch (err) {
+    console.log('Upload Error:', err);
+    // Handle error if necessary
+  } finally {
+    setIsLoading(false); // Ensure loading state is false when done
+  }
+};
+
 
 
   return (
@@ -648,8 +669,8 @@ render={({ field: { onChange, onBlur, value } }) => (
           render={({ field: { onChange, value } }) => (
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '99%', alignContent: 'center',marginTop:10 }}>
-              {renderCustomRadioButton('furnished', 'Furnished', value, onChange)}
-              {renderCustomRadioButton('fully-furnished', 'Fully-furnished', value, onChange)}
+              {renderCustomRadioButton('fully-furnished', 'fully-furnished', value, onChange)}
+              {renderCustomRadioButton('semi-furnished', 'Semi-furnished', value, onChange)}
               {renderCustomRadioButton('unfurnished', 'Unfurnished', value, onChange)}
 
               {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>

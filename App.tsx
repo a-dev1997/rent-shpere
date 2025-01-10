@@ -17,6 +17,8 @@ import Wishlist from "./pages/Wishlistpage";
 import SeeAll from "./pages/Seeallpage";
 import AddProperty from "./pages/Addproperty";
 import PropertyForm from "./pages/Proppertyform";
+import ShowModel from "./component/showmodal";
+import Myproperty from "./pages/Myproperty";
 
  
 
@@ -32,7 +34,8 @@ function  RootStack(){
     <Stack.Screen name="Propertyview" component={PropertyVeiw} />
     <Stack.Screen name="Seeall" component={SeeAll} />
     <Stack.Screen name="Propertyform" component={PropertyForm} />
-    
+    <Stack.Screen  name="showmodal" component={ShowModel} />
+    <Stack.Screen name="Myproperty" component={Myproperty} />
   </Stack.Navigator>
   )
 }
