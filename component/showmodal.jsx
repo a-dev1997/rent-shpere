@@ -9,7 +9,7 @@ const ShowModel = () => {
 
   useEffect(() => {
     const backAction = () => {
-      nav.navigate('Home'); // Replace 'Home' with the name of your home screen
+      nav.navigate(componentId); // Replace 'Home' with the name of your home screen
       return true; // Prevent the default back action
     };
 
@@ -24,7 +24,7 @@ const ShowModel = () => {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontWeight: '500', fontSize: 20, color: '#F2F3F3' }}>{message}</Text>
+      <Text style={{ fontWeight: '500', fontSize: 20 }}>{message}</Text>
       <TouchableOpacity
         style={{ backgroundColor: '#13C39C' }}
         onPress={() => { nav.navigate(componentId); }}

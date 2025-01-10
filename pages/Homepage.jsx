@@ -483,7 +483,7 @@ const isPropertyInWishlist = (propertyId) => {
           {/* </View> */}
 
               <ScrollView horizontal={true}>
-           {properties.map(( item ) => {
+           {properties.map(( item,index ) => {
     const dataFormat = (date) => {
       if (!date) return "";
       const a = new Date(date);
@@ -507,7 +507,7 @@ const isPropertyInWishlist = (propertyId) => {
   };
     return (
       <TouchableOpacity
-      key={item.id}
+      key={index}
         onPress={() => {
           // Navigate to the property view
           nav.navigate('Propertyview', { id: item.id });
