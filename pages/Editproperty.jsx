@@ -32,7 +32,7 @@ const EditProperty = () => {
  const {statesData,statesStatus}=useSelector((state)=>state.statesData)
  const selectedItems = watch("selectedItems", []);
 
- const [images,setImages]=useState(null);
+ const [images,setImages]=useState([]);
  const [oldImages,setOldImages]=useState(null);
  console.log("Form Errors:", errors);
 
@@ -129,7 +129,7 @@ const data = response.data.data;
           type: [DocumentPicker.types.images], // You can specify file types like .pdf, .docx, etc.
           allowMultiSelection:true
       });
-setImages(res)
+setImages((oldvalue)=>{return [...oldvalue,...res]})
 onChange(res);
 
 
@@ -271,16 +271,26 @@ getProperty()
 {oldImages!=null ? 
            oldImages?.map((val,index)=>{
             return(
-                <View style={{position:'relative'}}>
-                  {oldImages.length>1?  <TouchableOpacity style={{position:"absolute",top:5,right:5,zIndex:999 }}>
+                <View style={{position:'relative',width:'33%'}}>
+                  <TouchableOpacity style={{position:"absolute",top:5,right:5,zIndex:999 }}>
                     <Image style={{height:20,width:20,}} source={require('../assets/appimages/trash.png')} />
-                    </TouchableOpacity>:''
-           }
-                    
-<Image key={index} style={{width:100,height:100,margin:5}} source={{uri:`${BASE_ASSET}uploads/propertyImages/${val}`}} /></View>)
-           }):''
+                    </TouchableOpacity>
            
-            
+                    
+<Image key={index} style={{width:'98%',height:100,objectFit:'cover',margin:5}} source={{uri:`${BASE_ASSET}uploads/propertyImages/${val}`}} /></View>)
+           }):''        
+}
+{images!=null ? 
+           images?.map((val,index)=>{
+            return(
+                <View style={{position:'relative',width:'33%'}}>
+                  <TouchableOpacity style={{position:"absolute",top:5,right:5,zIndex:999 }}>
+                    <Image style={{height:20,width:20,}} source={require('../assets/appimages/trash.png')} />
+                    </TouchableOpacity>
+           
+                    
+<Image key={index} style={{width:'98%',height:100,objectFit:'cover',margin:5}} source={{uri:`${val.uri}`}} /></View>)
+           }):''        
 }
 <Controller
       control={control}

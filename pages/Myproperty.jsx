@@ -114,9 +114,9 @@ key={index}
      
    
     </View>
-   <View style={{flexDirection:'row',justifyContent:'space-between',width:'99%',flexWrap:'wrap'}}>
+   <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap'}}>
       {/* <Text style={{ fontWeight: 400, fontSize: 10, color: '#7D7F88' }}>Posted on:{dataFormat(new Date())==dataFormat(item.created_at)?'Today':dataFormat(item.created_at)}</Text> */}
-
+     
       <TouchableOpacity onPress={()=>{handleDelete(item.id)}} style={[{alignItems:'center',backgroundColor:'red',borderRadius:5},styles.shadow]}>
        
             <Text style={{paddingVertical:5,paddingHorizontal:10,fontWeight:400,color:'white'}}>Delete</Text>
@@ -131,7 +131,7 @@ key={index}
 
       <TouchableOpacity style={[{alignItems:'center',backgroundColor:'green',borderRadius:5},styles.shadow]}>
         
-            <Text style={{paddingVertical:5,paddingHorizontal:10,fontWeight:400,color:'white'}}>Status</Text>
+            <Text style={{paddingVertical:5,paddingHorizontal:10,fontWeight:400,color:'white'}}>{item.status}</Text>
        
       </TouchableOpacity>
     </View> 
@@ -175,7 +175,10 @@ const styles=StyleSheet.create({
       },
       cardContent: {
         padding: 10,
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        alignItems:'space-between',
+        width:'70%',
+        
       },
       cardText: {
         fontWeight: 'bold',

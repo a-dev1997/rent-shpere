@@ -281,7 +281,7 @@ const isPropertyInWishlist = (propertyId) => {
   };
     return (
       <TouchableOpacity
-      key={item.id}
+      
         onPress={() => {
           // Navigate to the property view
           nav.navigate('Propertyview', { id: item.id });

@@ -10,6 +10,7 @@ const PropertyVeiw=()=>{
 const route=useRoute();
 const nav=useNavigation()
 const [propertydata,setPropertydata]=useState(null)
+
 const [img,setImg]=useState([])
 const [viewimg,setViewimg]=useState(null)
 const {id}=route.params;
@@ -17,7 +18,8 @@ const [count,setCount]=useState(1)
 
 const [property,setPorperty]=useState(null)
 const {data,status}=useSelector((state)=>state.userInfo)
-// console.log(propdata)
+const {profiledata,profilestatus}=useSelector((state)=>state.userProfile);
+// console.log('fjd'+JSON.stringify(profiledata))
 
 
 
@@ -81,9 +83,18 @@ useEffect(()=>{
                 {
                     img?.map((val,index)=>{
                         return(
+                            <View>
                             <TouchableOpacity key={index} onPress={()=>{setViewimg(val)}} style={{borderRadius:10,overflow:"hidden",marginVertical:10,marginHorizontal:10,borderWidth:1,borderColor:'#E3E3E7'}}>
                             <Image style={{height:100,width:100}} source={{uri:`${BASE_ASSET}uploads/propertyImages/${val}`}} />
                         </TouchableOpacity>
+                        
+                      { profiledata.data.id==property.user_id  && val!=property.featured_image?
+                       <TouchableOpacity style={{padding:5}}>
+                            <Text style={{color:'#315EE7',fontWeight:500,fontSize:12,textAlign:'center'}}>set display image</Text>
+                        </TouchableOpacity>:<Text style={{textAlign:'center'}}>display image</Text>
+                    }:
+                
+                        </View>
                         )
                     })
                 
