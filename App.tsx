@@ -20,6 +20,7 @@ import PropertyForm from "./pages/Proppertyform";
 import ShowModel from "./component/showmodal";
 import Myproperty from "./pages/Myproperty";
 import EditProperty from "./pages/Editproperty";
+import TenentList from "./pages/Tenentlist";
 
  
 
@@ -38,6 +39,7 @@ function  RootStack(){
     <Stack.Screen  name="showmodal" component={ShowModel} />
     <Stack.Screen name="Myproperty" component={Myproperty} />
     <Stack.Screen name="Editproperty" component={EditProperty}/>
+    <Stack.Screen name="Tenentlist" component={TenentList}/>
   </Stack.Navigator>
   )
 }

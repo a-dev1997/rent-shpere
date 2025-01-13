@@ -167,17 +167,62 @@ useEffect(()=>{
       }}>
       
       {/* Price and Payment Type Text */}
-      <Text style={{
-        fontWeight: '700', 
-        fontSize: 20, 
-        color: '#1A1E25',
-        paddingVertical: 10
-      }}>
-        {property.price}/{property.payment_type}
-      </Text>
-      
+      { profiledata.data.id==property.user_id?
+       <TouchableOpacity onPress={() => { }}>
+       <LinearGradient
+         colors={['red', 'red']}
+         style={{
+           height: 40,  // Defined height for button
+           width: 120,  // Defined width for button
+           borderRadius: 8, // Rounded corners
+           justifyContent: 'center', 
+           alignItems: 'center'
+         }}
+       >
+         <Text style={{
+           color: 'white', 
+           fontWeight: '600', 
+           fontSize: 16
+         }}>
+           Delete
+         </Text>
+       </LinearGradient>
+     </TouchableOpacity>:
+
+<Text style={{
+    fontWeight: '700', 
+    fontSize: 20, 
+    color: '#1A1E25',
+    paddingVertical: 10
+  }}>
+    {property.price}/{property.payment_type}
+  </Text>
+  
+    }
+    
       {/* Apply Button */}
-      <TouchableOpacity onPress={() => { /* handle apply button click */ }}>
+      { profiledata.data.id==property.user_id?
+        <TouchableOpacity onPress={() => { nav.navigate('Editproperty',{id:property.id})}}>
+        <LinearGradient
+          colors={['#917AFD', '#6246EA']}
+          style={{
+            height: 40,  // Defined height for button
+            width: 120,  // Defined width for button
+            borderRadius: 8, // Rounded corners
+            justifyContent: 'center', 
+            alignItems: 'center'
+          }}
+        >
+          <Text style={{
+            color: 'white', 
+            fontWeight: '600', 
+            fontSize: 16
+          }}>
+            Edit
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+      :<TouchableOpacity onPress={() => { /* handle apply button click */ }}>
         <LinearGradient
           colors={['#917AFD', '#6246EA']}
           style={{
@@ -197,6 +242,7 @@ useEffect(()=>{
           </Text>
         </LinearGradient>
       </TouchableOpacity>
+   }
     </View>
 </View>
     )

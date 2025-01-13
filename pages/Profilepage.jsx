@@ -116,7 +116,7 @@ const Profile=()=>{
                             <Text style={{fontWeight:700,color:'white',textAlign:'center'}}>My property</Text>
                             </LinearGradient>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{height:100,width:'45%',borderRadius:10,overflow:'hidden'}}>
+                        <TouchableOpacity onPress={()=>{nav.navigate('Tenentlist')}} style={{height:100,width:'45%',borderRadius:10,overflow:'hidden'}}>
                             <LinearGradient
                             colors={['#E65D4A','#F68070']}
                             style={{height:'100%',justifyContent:'center'}}

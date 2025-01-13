@@ -115,20 +115,7 @@ key={index}
    
     </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap'}}>
-      {/* <Text style={{ fontWeight: 400, fontSize: 10, color: '#7D7F88' }}>Posted on:{dataFormat(new Date())==dataFormat(item.created_at)?'Today':dataFormat(item.created_at)}</Text> */}
-     
-      <TouchableOpacity onPress={()=>{handleDelete(item.id)}} style={[{alignItems:'center',backgroundColor:'red',borderRadius:5},styles.shadow]}>
-       
-            <Text style={{paddingVertical:5,paddingHorizontal:10,fontWeight:400,color:'white'}}>Delete</Text>
-        
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={()=>{nav.navigate('Editproperty',{id:item.id})}} style={[{alignItems:'center',backgroundColor:'blue',borderRadius:5},styles.shadow]}>
-       
-            <Text style={{paddingVertical:5,paddingHorizontal:10,fontWeight:400,color:'white'}}>Edit</Text>
-       
-      </TouchableOpacity>
-
+      
       <TouchableOpacity style={[{alignItems:'center',backgroundColor:'green',borderRadius:5},styles.shadow]}>
         
             <Text style={{paddingVertical:5,paddingHorizontal:10,fontWeight:400,color:'white'}}>{item.status}</Text>

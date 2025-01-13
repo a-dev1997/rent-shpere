@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,Image,Button } from "react-native";
 import Input from "../component/input";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
@@ -8,16 +8,30 @@ import { useState } from "react";
 import DocumentPicker from 'react-native-document-picker'
 import axios from 'axios';
 import { useNavigation } from "@react-navigation/native";
+import GetLocation from "react-native-get-location";
+import MapView, { Callout, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+
+
 
 
 const PropertyForm = () => {
   const nav=useNavigation()
+  const latitude = 40.7128;
+  const longitude = -74.0060;
+
+  const openGoogleMap = () => {
+    // Open the Google Maps URL in a browser
+    const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+    Linking.openURL(url)
+      .catch((err) => console.error('Failed to open Google Maps:', err));
+  };
   const { catData, catStatus } = useSelector((state) => state.category);
   const { data: userInfoData, status } = useSelector((state) => state.userInfo); 
   const [isLoading, setIsLoading] = useState(false); // Track the loading state
   console.log('Categories:', JSON.stringify(catData));
+  const [location, setLocation] = useState(null);
   const [gradientColors, setGradientColors] = useState(['green', 'red']); // Ini
-  const { control, handleSubmit,watch, formState: { errors } } = useForm(
+  const { control, handleSubmit,watch,setValue, formState: { errors } } = useForm(
     {
       defaultValues: {
         features: [], // Initialize as an empty array
@@ -63,8 +77,22 @@ const PropertyForm = () => {
     </TouchableOpacity>
   );
 
+   // Function to get the current location
+   const currentLocation = async () => {
+    try {
+      const location = await GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 60000,
+      });
 
- 
+      // Set the location in state and populate form fields
+      setLocation(location);
+      setValue('latitude', location.latitude);
+      setValue('longitude', location.longitude);
+    } catch (error) {
+      console.error('Error getting location:', error);
+    }
+  };
 
   const handleImages=async(onChange)=>{
     try {
@@ -748,6 +776,78 @@ render={({ field: { onChange, onBlur, value } }) => (
         />
         {errors.project_name && <Text style={styles.errorText}>{errors.project_name.message}</Text>}
         
+
+                {/* Property name input */}
+                <Controller
+          control={control}
+          name="latitude"
+          // rules={{
+          //   required: 'latitude name is required',
+          // }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="latitude " style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50 ,marginVertical:5}} value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.latitude && <Text style={styles.errorText}>{errors.latitude.message}</Text>}
+
+                  {/* Property name input */}
+                  <Controller
+          control={control}
+          name="longitude"
+          // rules={{
+          //   required: 'longitude ',
+          // }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput placeholder="longitude " style={{ backgroundColor: '#F2F3F3', borderRadius: 10, color: "#888888", height: 50 ,marginVertical:5}} value={value} onChangeText={onChange} />
+          )}
+        />
+        {errors.longitude && <Text style={styles.errorText}>{errors.longitude.message}</Text>}
+   {/*   <View style={{flex:1}}> 
+         <MapView
+              style={StyleSheet.absoluteFillObject} *
+              // initialRegion={{
+              //   latitude: location.latitude,
+              //   longitude: location.longitude,
+              //   latitudeDelta: 0.0922,
+              //   longitudeDelta: 0.0421,
+              // }}
+            //   initialRegion={{
+            //     latitude: 37.78825,
+            //     longitude: -122.4324,
+            //     latitudeDelta: 0.0922,
+            //     longitudeDelta: 0.0421,
+            //   }}
+            //   provider="openstreetmap" // Use OpenStreetMap
+            // />
+              {/* <Marker coordinate={{ latitude: location.latitude, longitude: location.longitude }} /> 
+             </View>*/}
+
+<View style={styles.container}>
+      <Button title="Open Google Map" onPress={openGoogleMap} />
+    </View>
+
+<TouchableOpacity
+      style={{
+       
+        marginVertical:5,
+        
+ 
+      }}
+      onPress={currentLocation}
+    >
+      <LinearGradient
+        colors={['#315EE7', '#6246EA']}
+        style={{ borderRadius: 20,}}
+      >
+        <Text
+          style={{ color:'white', fontWeight: 700, fontSize: 20, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10,textAlign:'center' }}
+        >
+          get current logitude and latitude
+        </Text>
+      </LinearGradient>
+
+    </TouchableOpacity>          
+
 
          <TouchableOpacity
       style={{
