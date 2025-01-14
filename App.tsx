@@ -21,6 +21,7 @@ import ShowModel from "./component/showmodal";
 import Myproperty from "./pages/Myproperty";
 import EditProperty from "./pages/Editproperty";
 import TenentList from "./pages/Tenentlist";
+import EditProfile from "./pages/ProfileEdit";
 
  
 
@@ -40,6 +41,7 @@ function  RootStack(){
     <Stack.Screen name="Myproperty" component={Myproperty} />
     <Stack.Screen name="Editproperty" component={EditProperty}/>
     <Stack.Screen name="Tenentlist" component={TenentList}/>
+    <Stack.Screen name="Editprofile" component={EditProfile} />
   </Stack.Navigator>
   )
 }

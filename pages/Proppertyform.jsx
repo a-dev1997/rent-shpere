@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,Image,Button } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,Image,Button,Linking } from "react-native";
 import Input from "../component/input";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
@@ -9,7 +9,7 @@ import DocumentPicker from 'react-native-document-picker'
 import axios from 'axios';
 import { useNavigation } from "@react-navigation/native";
 import GetLocation from "react-native-get-location";
-import MapView, { Callout, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { Callout, Marker, Region } from 'react-native-maps';
 
 
 

@@ -107,6 +107,9 @@ const Profile=()=>{
                         <Text style={{fontWeight:700,fontSize:20}}>Welcome , {profiledata.data.name}</Text>
                         <Image style={{height:60,width:60,objectFit:'cover',borderRadius:50}} source={userData.profile_img?{uri:`${BASE_ASSET}/${userData.profile_img}`}:{uri:'https://s3-alpha-sig.figma.com/img/a296/3f70/a7feed7f191c17b1327b305679a65ff7?Expires=1736726400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ypsc6G4VY~wuSSG47f7kDCsa8zGHoC8~uwKAU84MQLwZtt3h3xWuPZcLkjf8FBhBOjX6kpV~EUDzARGRLfeb-q8aa5fMeA02TYdju7FfRWEoKfe8SfsCP7J1Fah5zrN94ehnRJhgSf~-7WbW8xz57qBIFhOfNE5ptjKGCOTggH3yj-VFBBdswjvnhdmwrVjWdpjwiA1p1hj69NB5IhgfdORzJ8~6yHWWe0l7LK41G03uQXKC8qTd0ygb39fEJe-maJaabER4RqwnboIzkI1V1kRrK4CPuZEfg4zM7Xi3MVw6O3oTRLD5uziSUIc8fdO0SkfMeVs~~aQi6jfJLfvDsw__'}}/>
                     </View>
+                    <TouchableOpacity onPress={()=>{nav.navigate('Editprofile')}}>
+                        <Text>edit</Text>
+                    </TouchableOpacity>
                     <View style={{flexDirection:'row',justifyContent:'space-between',width:'100%'}}>
                         <TouchableOpacity onPress={()=>{nav.navigate('Myproperty')}} style={{height:100,width:'45%',borderRadius:10,overflow:'hidden'}}>
                             <LinearGradient
