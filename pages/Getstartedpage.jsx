@@ -10,6 +10,7 @@ import { fetchCurrentlocation } from "../reduxStore/currentlocationslice";
 import { fetchProfile } from "../reduxStore/profiledataslice";
 import { fetchWishlist } from "../reduxStore/wishlistslice";
 import { fetchStates } from "../reduxStore/getstatesslice";
+import { fetchMyProperties } from "../reduxStore/mypropertyslice";
 const GetStarted=()=>{
 
     const nav=useNavigation();
@@ -28,6 +29,7 @@ const GetStarted=()=>{
     dispatch(fetchProfile())
     dispatch(fetchWishlist())
     dispatch(fetchStates())
+    dispatch((fetchMyProperties()))
    console.log('render')
   },[])
     return(

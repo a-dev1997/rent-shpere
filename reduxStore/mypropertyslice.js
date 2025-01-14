@@ -1,25 +1,55 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // AsyncThunk for fetching properties with pagination
-export const fetchMyProperties = createAsyncThunk(
-  'getproperties/fetchProperties',
-  async () => {
-    // Fetch data for the requested page
-    const response = await axios.get(`https://rentsphere.onavinfosolutions.com/api/my-properties`);
-    
-    return {
-      data: response.data.data, // Assuming `response.data.data` contains the array of properties
-    //   currentPage: response.data.current_page,
-    //   lastPage: response.data.last_page,
-    };
-  }
-);
+// export const fetchMyProperties = createAsyncThunk(
+//   'getproperties/fetchProperties',
+//   async () => {
+//     // Fetch data for the requested page
+//     const response = await axios.get(`https://rentsphere.onavinfosolutions.com/api/my-properties`);
 
-const userData = createSlice({
+//     return {
+//       data: response.data, // Assuming `response.data.data` contains the array of properties
+//     //   currentPage: response.data.current_page,
+//     //   lastPage: response.data.last_page,
+//     };
+//   }
+// );
+
+// AsyncThunk for fetching user profile data from AsyncStorage and API
+export const fetchMyProperties = createAsyncThunk('profiledata', async () => {
+  try {
+      // Get the token from AsyncStorage
+      const response = await AsyncStorage.getItem('user');
+      if (response) {
+          const user = JSON.parse(response); // Parse the user object from AsyncStorage
+             
+          // Fetch profile data using the token from AsyncStorage
+          const profile = await axios.get('https://rentsphere.onavinfosolutions.com/api/my-properties', {
+              headers: {
+                  'Authorization': `Bearer ${user.token}`, // Use the token from AsyncStorage
+              },
+          });
+
+          // Log profile data (can be removed in production)
+          console.log('kjkjkjkjk'+profile.data);
+
+          // Return the profile data in the expected shape
+          return { data: profile.data };
+      } else {
+          throw new Error("User not found in AsyncStorage");
+      }
+  } catch (error) {
+      console.error("Error fetching profile data:", error);
+      throw error;
+  }
+});
+
+const myproperties = createSlice({
   name: 'getmyproperties',
   initialState: {
-    mypropdata: [], // Initialize with an empty array for paginated results
+    mypropdata: null, // Initialize with an empty array for paginated results
     mypropstatus: 'idle', // Can be 'idle', 'loading', 'succeeded', 'failed'
     myproperror: null,
     // currentPage: 1, // Track the current page
@@ -29,25 +59,23 @@ const userData = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProperties.pending, (state) => {
-        state.propstatus = 'loading';
+      .addCase(fetchMyProperties.pending, (state) => {
+        state.mypropstatus = 'loading';
       })
-      .addCase(fetchProperties.fulfilled, (state, action) => {
-        state.propstatus = 'succeeded';
+      .addCase(fetchMyProperties.fulfilled, (state, action) => {
+        state.mypropstatus = 'succeeded';
         // Append the new data to the existing data
-        state.propdata = [...state.propdata,...action.payload.data];
-        // Update the current page and determine if there are more pages
-        state.currentPage = action.payload.currentPage;
-        state.lastPage=action.payload.lastPage;
-        state.hasMore = action.payload.currentPage < action.payload.lastPage;
+        state.mypropdata =action.payload.data;
+       
+        
       })
-      .addCase(fetchProperties.rejected, (state, action) => {
-        state.propstatus = 'failed';
-        state.properror = action.error.message;
+      .addCase(fetchMyProperties.rejected, (state, action) => {
+        state.mypropstatus = 'failed';
+        state.myproperror = action.error.message;
       });
   },
 });
 
-export default userData.reducer;
+export default myproperties.reducer;
 
 

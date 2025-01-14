@@ -9,7 +9,8 @@ import { useNavigation } from "@react-navigation/native";
 const Profile=()=>{
     const nav=useNavigation()
     const {profiledata,profilestatus}=useSelector((state)=>state.userProfile);
-    console.log(profiledata)
+    const {mypropdata,mypropstatus}=useSelector((state)=>state.getmyproperties);
+   console.log(mypropdata)
     
     const [userData,setUserdata]=useState(null)
 
@@ -117,6 +118,7 @@ const Profile=()=>{
                             style={{height:'100%',justifyContent:'center',alignItems:'center'}}
                             >
                             <Text style={{fontWeight:700,color:'white',textAlign:'center'}}>My property</Text>
+                            <Text></Text>
                             </LinearGradient>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>{nav.navigate('Tenentlist')}} style={{height:100,width:'45%',borderRadius:10,overflow:'hidden'}}>
