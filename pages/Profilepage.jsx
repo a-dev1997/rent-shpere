@@ -1,31 +1,36 @@
 import { Image, ScrollView, View ,Text, TouchableOpacity, ActivityIndicator,StyleSheet} from "react-native"
 import LinearGradient from "react-native-linear-gradient";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch} from "react-redux";
 import { useEffect, useState } from "react";
 import { BASE_ASSET } from "../config";
 import { useNavigation } from "@react-navigation/native";
+import { fetchProfile } from "../reduxStore/profiledataslice";
+import { fetchMyProperties } from "../reduxStore/mypropertyslice";
 
 const Profile=()=>{
+    const dispatch=useDispatch()
     const nav=useNavigation()
     const {profiledata,profilestatus}=useSelector((state)=>state.userProfile);
     const {mypropdata,mypropstatus}=useSelector((state)=>state.getmyproperties);
-   console.log(mypropdata)
+   console.log('profidatafetch'+JSON.stringify(profiledata))
     
     const [userData,setUserdata]=useState(null)
 
-
-    useEffect(()=>{
-    if(profilestatus=='succeeded'){
-        setUserdata(profiledata.data )
-    }
-    },[profilestatus])
-    if(userData==null){
-        return(
-            <ActivityIndicator />
-        )
-    }else{
+// useEffect(()=>{
+//    dispatch(fetchProfile())
+//    dispatch(fetchMyProperties())
+    
+// },[])
+ if(profilestatus!='succeeded'){
     return(
+        <View>
+            kfjdkfjdk
+        </View>
+    )
+ }else{
+  
+    
         // <ScrollView  contentContainerStyle={{flex:1,flexDirection:'column',justifyContent:'space-around',alignItems:'center',backgroundColor:'white'}}>
         //         <View style={{justifyContent:'center',alignItems:'center'}}>
         //             <Image style={{height:80,width:80,objectFit:'cover',borderRadius:50}} source={userData.profile_img?{uri:`${BASE_ASSET}/${userData.profile_img}`}:{uri:'https://s3-alpha-sig.figma.com/img/a296/3f70/a7feed7f191c17b1327b305679a65ff7?Expires=1736726400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ypsc6G4VY~wuSSG47f7kDCsa8zGHoC8~uwKAU84MQLwZtt3h3xWuPZcLkjf8FBhBOjX6kpV~EUDzARGRLfeb-q8aa5fMeA02TYdju7FfRWEoKfe8SfsCP7J1Fah5zrN94ehnRJhgSf~-7WbW8xz57qBIFhOfNE5ptjKGCOTggH3yj-VFBBdswjvnhdmwrVjWdpjwiA1p1hj69NB5IhgfdORzJ8~6yHWWe0l7LK41G03uQXKC8qTd0ygb39fEJe-maJaabER4RqwnboIzkI1V1kRrK4CPuZEfg4zM7Xi3MVw6O3oTRLD5uziSUIc8fdO0SkfMeVs~~aQi6jfJLfvDsw__'}}/>
@@ -103,10 +108,10 @@ const Profile=()=>{
         //                        </TouchableOpacity>
         //         </View>
         // </ScrollView>
-         <View style={{flex:1,padding:20}}>
+        return(    <View style={{flex:1,padding:20}}>
                     <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingBottom:'10'}}>
                         <Text style={{fontWeight:700,fontSize:20}}>Welcome , {profiledata.data.name}</Text>
-                        <Image style={{height:60,width:60,objectFit:'cover',borderRadius:50}} source={userData.profile_img?{uri:`${BASE_ASSET}/${userData.profile_img}`}:{uri:'https://s3-alpha-sig.figma.com/img/a296/3f70/a7feed7f191c17b1327b305679a65ff7?Expires=1736726400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ypsc6G4VY~wuSSG47f7kDCsa8zGHoC8~uwKAU84MQLwZtt3h3xWuPZcLkjf8FBhBOjX6kpV~EUDzARGRLfeb-q8aa5fMeA02TYdju7FfRWEoKfe8SfsCP7J1Fah5zrN94ehnRJhgSf~-7WbW8xz57qBIFhOfNE5ptjKGCOTggH3yj-VFBBdswjvnhdmwrVjWdpjwiA1p1hj69NB5IhgfdORzJ8~6yHWWe0l7LK41G03uQXKC8qTd0ygb39fEJe-maJaabER4RqwnboIzkI1V1kRrK4CPuZEfg4zM7Xi3MVw6O3oTRLD5uziSUIc8fdO0SkfMeVs~~aQi6jfJLfvDsw__'}}/>
+                        <Image style={{height:60,width:60,objectFit:'cover',borderRadius:50}} source={profiledata.data.profile_img?{uri:`${BASE_ASSET}/${profiledata.data.profile_img}`}:{uri:'https://s3-alpha-sig.figma.com/img/a296/3f70/a7feed7f191c17b1327b305679a65ff7?Expires=1736726400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ypsc6G4VY~wuSSG47f7kDCsa8zGHoC8~uwKAU84MQLwZtt3h3xWuPZcLkjf8FBhBOjX6kpV~EUDzARGRLfeb-q8aa5fMeA02TYdju7FfRWEoKfe8SfsCP7J1Fah5zrN94ehnRJhgSf~-7WbW8xz57qBIFhOfNE5ptjKGCOTggH3yj-VFBBdswjvnhdmwrVjWdpjwiA1p1hj69NB5IhgfdORzJ8~6yHWWe0l7LK41G03uQXKC8qTd0ygb39fEJe-maJaabER4RqwnboIzkI1V1kRrK4CPuZEfg4zM7Xi3MVw6O3oTRLD5uziSUIc8fdO0SkfMeVs~~aQi6jfJLfvDsw__'}}/>
                     </View>
                     <TouchableOpacity onPress={()=>{nav.navigate('Editprofile')}}>
                         <Text>edit</Text>
