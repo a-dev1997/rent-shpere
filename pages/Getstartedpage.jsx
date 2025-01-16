@@ -22,11 +22,11 @@ const GetStarted=()=>{
     // console.log(data)
     // console.log('dkfjd'+catData)
     const {profiledata,profilestatus}=useSelector((state)=>state.userProfile);
-    console.log("jfkdjfdfjdk this is "+profiledata)
+    console.log("jfkdjfdfjdk this is "+JSON.stringify(profiledata))
  useEffect(()=>{
     dispatch(fetchUserData())
-    dispatch(fetchProperties())
-    dispatch(fetchCatData(1))
+    dispatch(fetchProperties(1))
+    dispatch(fetchCatData())
     dispatch(fetchCurrentlocation())
     dispatch(fetchProfile())
     dispatch(fetchWishlist())

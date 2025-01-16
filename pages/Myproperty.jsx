@@ -28,23 +28,7 @@ const Myproperty=()=>{
     }
 
       // Function to handle the Delete action
-      const handleDelete = (prop_id) => {
-        Alert.alert(
-            "Confirm Deletion",
-            "Are you sure you want to delete this item?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "Yes",
-                    onPress: () => deleteItem(prop_id) // Call the deleteItem function if confirmed
-                }
-            ],
-            { cancelable: false }
-        );
-    };
+     
 
     // Function to call the API to delete the item
     const deleteItem = async (prop_id) => {
@@ -70,7 +54,7 @@ const Myproperty=()=>{
   },[count])
     return(
         <View style={{flex:1}}>
-            <Text style={{textAlign:'center',fontWeight:500,fontSize:20}}>My Property</Text>
+            <Text style={{textAlign:'center',fontWeight:500,fontSize:20,paddingVertical:20}}>My Property</Text>
                 <ScrollView>
       {prop?.map((item,index)=>{
 return(

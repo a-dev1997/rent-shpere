@@ -36,6 +36,7 @@ export const fetchProfile = createAsyncThunk('profiledata', async () => {
          
 
           // Return the profile data in the expected shape
+      
           return { data: profile.data };
       } else {
           throw new Error("User not found in AsyncStorage");

@@ -18,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // );
 
 // AsyncThunk for fetching user profile data from AsyncStorage and API
-export const fetchMyProperties = createAsyncThunk('profiledata', async () => {
+export const fetchMyProperties = createAsyncThunk('myproperty', async () => {
   try {
       // Get the token from AsyncStorage
       const response = await AsyncStorage.getItem('user');
@@ -26,17 +26,17 @@ export const fetchMyProperties = createAsyncThunk('profiledata', async () => {
           const user = JSON.parse(response); // Parse the user object from AsyncStorage
              
           // Fetch profile data using the token from AsyncStorage
-          const profile = await axios.get('https://rentsphere.onavinfosolutions.com/api/my-properties', {
+          const myproperty = await axios.get('https://rentsphere.onavinfosolutions.com/api/my-properties', {
               headers: {
                   'Authorization': `Bearer ${user.token}`, // Use the token from AsyncStorage
               },
           });
 
           // Log profile data (can be removed in production)
-          console.log('kjkjkjkjk'+profile.data);
+         
 
           // Return the profile data in the expected shape
-          return { data: profile.data };
+          return { data: myproperty.data };
       } else {
           throw new Error("User not found in AsyncStorage");
       }

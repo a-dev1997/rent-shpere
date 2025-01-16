@@ -1,8 +1,10 @@
 import { View,Text,Image } from "react-native"
 import 'react-native-reanimated';
+import Pusher from 'pusher-js';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSelector, UseSelector } from "react-redux";
 import GetStarted from "./pages/Getstartedpage";
 import SplashScreen from "./pages/Splashscreen";
 import Signin from "./pages/Signinpage";
@@ -22,6 +24,8 @@ import Myproperty from "./pages/Myproperty";
 import EditProperty from "./pages/Editproperty";
 import TenentList from "./pages/Tenentlist";
 import EditProfile from "./pages/ProfileEdit";
+import { useEffect } from "react";
+import Notification from "./pages/Notification";
 
  
 
@@ -42,6 +46,7 @@ function  RootStack(){
     <Stack.Screen name="Editproperty" component={EditProperty}/>
     <Stack.Screen name="Tenentlist" component={TenentList}/>
     <Stack.Screen name="Editprofile" component={EditProfile} />
+    <Stack.Screen name="Notification" component={Notification} />
   </Stack.Navigator>
   )
 }
@@ -50,6 +55,19 @@ function  RootStack(){
 
 function MyTabs() {
   const Tab = createBottomTabNavigator();
+  const {profiledata,profilestatus}=useSelector((state:any)=>state.userProfile)
+  useEffect(()=>{
+    var pusher = new Pusher('8f73656210544fae641f', {
+      cluster: 'ap2'
+    });
+  const applychannel= pusher.subscribe('apply.2');
+            applychannel.bind('ApplyNotify',function(event:any){
+             console.log(event)
+            
+             
+            })
+  },[])
+ 
   return (
     <Tab.Navigator screenOptions={{
       headerShown:false,
@@ -147,7 +165,7 @@ function MyTabs() {
 
 
 const App=()=>{
-
+ 
   return(
     <Provider store={store}>
     <NavigationContainer >

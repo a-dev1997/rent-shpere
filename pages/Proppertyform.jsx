@@ -9,22 +9,17 @@ import DocumentPicker from 'react-native-document-picker'
 import axios from 'axios';
 import { useNavigation } from "@react-navigation/native";
 import GetLocation from "react-native-get-location";
-import MapView, { Callout, Marker, Region } from 'react-native-maps';
+import { WebView } from 'react-native-webview';
 
 
 
 
 const PropertyForm = () => {
   const nav=useNavigation()
-  const latitude = 40.7128;
-  const longitude = -74.0060;
+  const [latitude,setLatitude] =useState(40.7128) ;
+  const [longitude ,setLongitude]=useState(-74.0060) ;
 
-  const openGoogleMap = () => {
-    // Open the Google Maps URL in a browser
-    const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
-    Linking.openURL(url)
-      .catch((err) => console.error('Failed to open Google Maps:', err));
-  };
+ 
   const { catData, catStatus } = useSelector((state) => state.category);
   const { data: userInfoData, status } = useSelector((state) => state.userInfo); 
   const [isLoading, setIsLoading] = useState(false); // Track the loading state
@@ -41,7 +36,7 @@ const PropertyForm = () => {
  const {statesData,statesStatus}=useSelector((state)=>state.statesData)
  const selectedItems = watch("selectedItems", []);
 
- const [images,setImages]=useState(null);
+ const [images,setImages]=useState([]);
  console.log("Form Errors:", errors);
 
   // Handle form submission
@@ -87,8 +82,11 @@ const PropertyForm = () => {
 
       // Set the location in state and populate form fields
       setLocation(location);
-      setValue('latitude', location.latitude);
-      setValue('longitude', location.longitude);
+      setValue('latitude', location.latitude.toString());
+      setValue('longitude', location.longitude.toString());
+      setLatitude(location.latitude);
+      setLongitude(location.longitude)
+
     } catch (error) {
       console.error('Error getting location:', error);
     }
@@ -100,7 +98,7 @@ const PropertyForm = () => {
           type: [DocumentPicker.types.images], // You can specify file types like .pdf, .docx, etc.
           allowMultiSelection:true
       });
-setImages(res)
+setImages((oldimg)=>  [...oldimg,...res])
 onChange(res);
       console.log('Picked document2:',images );
   } catch (err) {
@@ -171,7 +169,8 @@ const handleUpload = async (data) => {
   formData.append("carpet_area", data.carpet_area);
   formData.append("city", data.city);
   formData.append("furnishing", data.furnishing);
-
+  formData.append("latitude",data.latitude)
+  formData.append("longitude",data.longitude);
   console.log('Form Data:', formData);
 
   try {
@@ -190,14 +189,14 @@ const handleUpload = async (data) => {
        // Use useNavigation to navigate to the modal
    if(response.data.message){
     nav.navigate('showmodal', {
-      message: 'Your booking has been successfully submitted!',
+      message: 'Your property has been successfully submitted!',
       buttonname:'back to home',
       componentId:'Mytabs',
     });
   }else{
 
     nav.navigate('showmodal', {
-      message: 'Your booking has been failed',
+      message: 'Your property submission has been failed',
       buttonname:'back to home',
       componentId:'Mytabs',
     });
@@ -211,8 +210,36 @@ const handleUpload = async (data) => {
   }
 };
 
+// Function to handle navigation state changes and extract coordinates
+  const handleNavigationStateChange = (event) => {
+    const { url } = event; // Get the current URL
+
+    console.log("Current URL:", url); // Log the URL for debugging
+
+    // Regular expression to match the pattern of the URL with latitude and longitude
+    const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/); // Matches latitude and longitude
+    if (match) {
+      const newLatitude = parseFloat(match[1]); // Extract latitude
+      const newLongitude = parseFloat(match[2]); // Extract longitude
+console.log('new'+newLatitude)
+     
+        setValue('latitude',newLatitude.toString()); // Update latitude state
+        setValue('longitude',newLongitude.toString()); // Update longitude state
+      
+    }
+  };
 
 
+  const removeImage = (indx) => {
+    console.log(indx)
+    let b = images.slice(0, indx)
+    console.log(b)
+    setImages(b)
+  setValue('images',images)
+  if(images.length==1){
+    setValue('images','')
+  }
+  }
   return (
     <View style={{ backgroundColor: 'white', flex: 1, padding: 10 }}>
       <ScrollView>
@@ -236,7 +263,12 @@ const handleUpload = async (data) => {
 {images!=null ? 
            images?.map((val,index)=>{
             return(
-<Image key={index} style={{width:100,height:100,margin:5}} source={{uri:val.uri}} />)
+              <View style={{width:'30%',margin:5,position:'relative'}}>
+                 <TouchableOpacity onPress={()=>{removeImage(index)}} style={{position:"absolute",top:5,right:5,zIndex:999 }}>
+                    <Image style={{height:20,width:20,}} source={require('../assets/appimages/trash.png')} />
+                    </TouchableOpacity>
+<Image key={index} style={{height:100,width:'100%'}} source={{uri:val.uri}} /> 
+ </View>)
            }):''
            
             
@@ -249,7 +281,7 @@ const handleUpload = async (data) => {
       }}
          render={({field: {onChange,value}})=>(
          <TouchableOpacity onPress={()=>{handleImages(onChange)}} style={[styles.uploadButton,{margin:5}]} >
-        <Text style={styles.uploadText}>Upload</Text>
+        <Text style={styles.uploadText}>+ Upload</Text>
         {/* {value && (
             <Text style={styles.fileInfo}>{`Selected: ${value[0]?.name}`}</Text>
           )} */}
@@ -802,29 +834,13 @@ render={({ field: { onChange, onBlur, value } }) => (
           )}
         />
         {errors.longitude && <Text style={styles.errorText}>{errors.longitude.message}</Text>}
-   {/*   <View style={{flex:1}}> 
-         <MapView
-              style={StyleSheet.absoluteFillObject} *
-              // initialRegion={{
-              //   latitude: location.latitude,
-              //   longitude: location.longitude,
-              //   latitudeDelta: 0.0922,
-              //   longitudeDelta: 0.0421,
-              // }}
-            //   initialRegion={{
-            //     latitude: 37.78825,
-            //     longitude: -122.4324,
-            //     latitudeDelta: 0.0922,
-            //     longitudeDelta: 0.0421,
-            //   }}
-            //   provider="openstreetmap" // Use OpenStreetMap
-            // />
-              {/* <Marker coordinate={{ latitude: location.latitude, longitude: location.longitude }} /> 
-             </View>*/}
+        <WebView
+        source={{ uri: `https://www.google.com/maps?q=${latitude},${longitude}` }}
+        style={{height:600}}
+        onNavigationStateChange={handleNavigationStateChange} // Track URL changes
+      />
 
-<View style={styles.container}>
-      <Button title="Open Google Map" onPress={openGoogleMap} />
-    </View>
+
 
 <TouchableOpacity
       style={{

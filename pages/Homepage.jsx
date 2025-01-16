@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { BASE_ASSET, BASE_URL } from '../config';
 import Carousel from 'react-native-reanimated-carousel';
-import { ScrollView, View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,KeyboardAvoidingView } from 'react-native';
+import { ScrollView, View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,KeyboardAvoidingView ,Alert,RefreshControl} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { fetchProperties } from '../reduxStore/getpropertiesslice';
 import axios from 'axios';
 import { fetchWishlist } from '../reduxStore/wishlistslice';
-
+import Pusher from 'pusher-js';
+import { notification } from '../component/notification';
 
 const Home = () => {
   const nav = useNavigation();
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('rent');
   const [applyflter,setApplyfilter]=useState(false)
-
+  const [count,setCount]=useState(1)
   const [activeFilter, setActivefilter] = useState('All');
   const [wishlistLoading,setWishlistLoading]=useState(false);
   const { data, status } = useSelector((state) => state.userInfo);
@@ -54,7 +55,17 @@ const carouselData = [
   },
 ];
 
-
+ const {profiledata,profilestatus}=useSelector((state)=>state.userProfile)
+  useEffect(()=>{
+    var pusher = new Pusher('8f73656210544fae641f', {
+      cluster: 'ap2'
+    });
+  const applychannel= pusher.subscribe('apply.'+profiledata.data.id);
+            applychannel.bind('ApplyNotify',function(event){
+              const randomNumber = Math.floor(Math.random() * 1000) + 1;
+              notification(event.sender,event.title,event.message)
+            })
+  },[0])
 
 const renderCarousel= ({ item, index }) => {
   return (
@@ -82,7 +93,7 @@ const renderCarousel= ({ item, index }) => {
       
       }
     
-  }, [ propdata,addWishlist,removeProperty]);
+  }, [ propdata,addWishlist,removeProperty,count]);
 
 
   const handleEndReached = () => {
@@ -171,7 +182,21 @@ const isPropertyInWishlist = (propertyId) => {
   }
 
 };
+const [isRefreshing, setIsRefreshing] = useState(false);
 
+const handleRefresh = () => {
+  setIsRefreshing(true);
+  dispatch(fetchProperties(1))
+  setCount(count+1)
+  // Simulate a data refresh (e.g., fetching new data)
+  setTimeout(() => {
+    setIsRefreshing(false); // Stop refreshing after some time
+    console.log('Page Refreshed!');
+  }, 2000); // Simulate 2 seconds of refresh time
+};
+useEffect(()=>{
+dispatch(fetchProperties())
+},[])
   
   return (
     <View style={{ flex: 5, backgroundColor: 'white'}}>
@@ -187,7 +212,10 @@ const isPropertyInWishlist = (propertyId) => {
         </View>
        
         </View>
+        <TouchableOpacity onPress={()=>{nav.navigate('Notification')}}>
         <Image style={{height:30,width:30,objectFit:'contain'}} source={require('../assets/appimages/notification.png')} />
+        </TouchableOpacity>
+       
         </View>
         <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',height:100}}>
           <TouchableOpacity
@@ -228,7 +256,9 @@ const isPropertyInWishlist = (propertyId) => {
       <View style={{ width: '100%', flex:5,height:'100%' }}>
       
        
-        <ScrollView >
+        <ScrollView  refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+      } >
 
         <View style={{ paddingHorizontal: 0,marginVertical:20,backgroundColor:'#E5E5E5'}}>
           <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Near Your Location</Text>
