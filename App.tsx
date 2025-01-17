@@ -1,6 +1,7 @@
 import { View,Text,Image } from "react-native"
 import 'react-native-reanimated';
 import Pusher from 'pusher-js';
+import axios from "axios";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -24,8 +25,9 @@ import Myproperty from "./pages/Myproperty";
 import EditProperty from "./pages/Editproperty";
 import TenentList from "./pages/Tenentlist";
 import EditProfile from "./pages/ProfileEdit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Notification from "./pages/Notification";
+import Chat from "./pages/Chantpage";
 
  
 
@@ -47,6 +49,7 @@ function  RootStack(){
     <Stack.Screen name="Tenentlist" component={TenentList}/>
     <Stack.Screen name="Editprofile" component={EditProfile} />
     <Stack.Screen name="Notification" component={Notification} />
+    <Stack.Screen name="Chat" component={Chat} />
   </Stack.Navigator>
   )
 }
@@ -55,18 +58,18 @@ function  RootStack(){
 
 function MyTabs() {
   const Tab = createBottomTabNavigator();
-  const {profiledata,profilestatus}=useSelector((state:any)=>state.userProfile)
-  useEffect(()=>{
-    var pusher = new Pusher('8f73656210544fae641f', {
-      cluster: 'ap2'
-    });
-  const applychannel= pusher.subscribe('apply.2');
-            applychannel.bind('ApplyNotify',function(event:any){
-             console.log(event)
+  // const {profiledata,profilestatus}=useSelector((state:any)=>state.userProfile)
+  // useEffect(()=>{
+  //   var pusher = new Pusher('8f73656210544fae641f', {
+  //     cluster: 'ap2'
+  //   });
+  // const applychannel= pusher.subscribe('apply.2');
+  //           applychannel.bind('ApplyNotify',function(event:any){
+  //            console.log(event)
             
              
-            })
-  },[])
+  //           })
+  // },[])
  
   return (
     <Tab.Navigator screenOptions={{
@@ -85,7 +88,7 @@ function MyTabs() {
           return(
               
               <View style={{justifyContent:'center',width:'100%'}}>
-                  <Image resizeMode="contain"  source={
+                  <Image style={{height:40,width:40}}  resizeMode="contain"  source={
                     focused
                       ? require('./assets/appimages/home-icon-active.png') // Active image
                       : require('./assets/appimages/home-icon.png') // Inactive image
@@ -97,15 +100,19 @@ function MyTabs() {
       }} name="Home" component={Home} />
       <Tab.Screen options={{
          tabBarIcon:({focused})=>{
+          const {counting}=useSelector((state:any)=>state.messages)
+        //  console.log(counting)
+         
           return(
               
-              <View style={{justifyContent:'center',width:'100%'}}>
-                  <Image resizeMode="contain"  source={
+              <View style={{justifyContent:'center',width:'100%',position:"relative"}}>
+                  <Image style={{height:40,width:40}} resizeMode="contain"  source={
                     focused
                       ? require('./assets/appimages/chat-icon-active.png') // Active image
                       : require('./assets/appimages/chat-icon.png') // Inactive image
                   }/>
                   {/* <Text style={{color:'white',fontSize:8,textAlign:'center'}}>Home</Text> */}
+                 {counting? <Text style={{position:'absolute',top:2,right:-5,fontSize:10,backgroundColor:'#917AFD',padding:5,borderRadius:5}}>{counting}</Text>:""}
               </View>
           )
       }
@@ -115,9 +122,9 @@ function MyTabs() {
           return(
               
               <View style={{justifyContent:'center',width:'100%'}}>
-                  <Image  style={{height:50,width:50}} resizeMode="contain"  source={
+                  <Image style={{height:40,width:40}}   resizeMode="contain"  source={
                     focused
-                      ? require('./assets/appimages/chat-icon-active.png') // Active image
+                      ? require('./assets/appimages/addproperty-active.png') // Active image
                       : require('./assets/appimages/addproperty.png') // Inactive image
                   }/>
                   {/* <Text style={{color:'white',fontSize:8,textAlign:'center'}}>Home</Text> */}
@@ -131,7 +138,7 @@ function MyTabs() {
           return(
               
               <View style={{justifyContent:'center',width:'100%'}}>
-                  <Image resizeMode="contain"  source={
+                  <Image style={{height:40,width:40}}  resizeMode="contain"  source={
                     focused
                       ? require('./assets/appimages/chat-icon-active.png') // Active image
                       : require('./assets/appimages/save-icon.png') // Inactive image

@@ -7,6 +7,7 @@ import profiledata from './profiledataslice';
 import wishlist from './wishlistslice'
 import states from './getstatesslice'
 import myproperties from './mypropertyslice'
+import mymessages from './messageslice'
 const store=configureStore({
     reducer: {
       getproperties:getProperties,
@@ -16,7 +17,8 @@ const store=configureStore({
         userWishlist:wishlist,
         category:categorydata,
         statesData:states,
-        getmyproperties:myproperties
+        getmyproperties:myproperties,
+        messages:mymessages
       },
 })
 

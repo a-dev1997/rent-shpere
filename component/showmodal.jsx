@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, BackHandler } from 'react-native';
+import { View, Text, TouchableOpacity, BackHandler, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const ShowModel = () => {
@@ -24,6 +24,7 @@ const ShowModel = () => {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Image source={require('../assets/appimages/success.png')} />
       <Text style={{ fontWeight: '500', fontSize: 20 }}>{message}</Text>
       <TouchableOpacity
         style={{ backgroundColor: '#13C39C' }}

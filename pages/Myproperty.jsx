@@ -54,7 +54,12 @@ const Myproperty=()=>{
   },[count])
     return(
         <View style={{flex:1}}>
-            <Text style={{textAlign:'center',fontWeight:500,fontSize:20,paddingVertical:20}}>My Property</Text>
+             <LinearGradient
+                             colors={['#917AFD','#6246EA']}
+                             style={{marginBottom:10}}
+                             >
+                       <Text style={{fontWeight:500,fontSize:20,color:'white',textAlign:'center',paddingVertical:10}}>My Property</Text>
+                             </LinearGradient>
                 <ScrollView>
       {prop?.map((item,index)=>{
 return(
@@ -100,7 +105,7 @@ key={index}
     </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap'}}>
       
-      <TouchableOpacity style={[{alignItems:'center',backgroundColor:'green',borderRadius:5},styles.shadow]}>
+      <TouchableOpacity style={[{alignItems:'center',backgroundColor:item.status=='active'?'green':'red',borderRadius:5},styles.shadow]}>
         
             <Text style={{paddingVertical:5,paddingHorizontal:10,fontWeight:400,color:'white'}}>{item.status}</Text>
        

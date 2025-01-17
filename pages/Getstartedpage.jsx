@@ -11,6 +11,7 @@ import { fetchProfile } from "../reduxStore/profiledataslice";
 import { fetchWishlist } from "../reduxStore/wishlistslice";
 import { fetchStates } from "../reduxStore/getstatesslice";
 import { fetchMyProperties } from "../reduxStore/mypropertyslice";
+import { fetchMessage } from "../reduxStore/messageslice";
 const GetStarted=()=>{
 
     const nav=useNavigation();
@@ -21,8 +22,8 @@ const GetStarted=()=>{
     // console.log(propdata)
     // console.log(data)
     // console.log('dkfjd'+catData)
-    const {profiledata,profilestatus}=useSelector((state)=>state.userProfile);
-    console.log("jfkdjfdfjdk this is "+JSON.stringify(profiledata))
+    const {messagedata,messagestatus}=useSelector((state)=>state.messages);
+    console.log("jfkdjfdfjdk this is "+JSON.stringify(messagedata))
  useEffect(()=>{
     dispatch(fetchUserData())
     dispatch(fetchProperties(1))
@@ -32,6 +33,7 @@ const GetStarted=()=>{
     dispatch(fetchWishlist())
     dispatch(fetchStates())
     dispatch((fetchMyProperties()))
+    dispatch(fetchMessage())
    console.log('render')
   },[])
     return(

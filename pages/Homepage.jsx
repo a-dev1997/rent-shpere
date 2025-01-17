@@ -9,7 +9,9 @@ import { fetchProperties } from '../reduxStore/getpropertiesslice';
 import axios from 'axios';
 import { fetchWishlist } from '../reduxStore/wishlistslice';
 import Pusher from 'pusher-js';
-import { notification } from '../component/notification';
+import { notificationAlert } from '../component/notification';
+import { fetchMessage } from '../reduxStore/messageslice';
+import { messageNotification } from '../component/messageNotification';
 
 const Home = () => {
   const nav = useNavigation();
@@ -17,6 +19,7 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState('rent');
   const [applyflter,setApplyfilter]=useState(false)
   const [count,setCount]=useState(1)
+  const [notification,setNotification]=useState(0)
   const [activeFilter, setActivefilter] = useState('All');
   const [wishlistLoading,setWishlistLoading]=useState(false);
   const { data, status } = useSelector((state) => state.userInfo);
@@ -63,7 +66,18 @@ const carouselData = [
   const applychannel= pusher.subscribe('apply.'+profiledata.data.id);
             applychannel.bind('ApplyNotify',function(event){
               const randomNumber = Math.floor(Math.random() * 1000) + 1;
-              notification(event.sender,event.title,event.message)
+              fetchNotifications()
+              notificationAlert(event.sender,event.title,event.message)
+              
+            })
+         const messageChannel=   pusher.subscribe('chat.'+profiledata.data.id);
+         messageChannel.bind('GotMessage',function(event){
+              const randomNumber = Math.floor(Math.random() * 1000) + 1;
+              dispatch(fetchMessage())
+              // notificationAlert(event.sender,event.title,event.message)
+              
+              messageNotification(event.sender_id,event.name,event.message)
+              
             })
   },[0])
 
@@ -173,6 +187,47 @@ const renderCarousel= ({ item, index }) => {
     }
   };
 
+  const fetchNotifications = async () => {
+    try {
+      // Make the GET request to the provided API URL
+      const response = await axios.get('https://rentsphere.onavinfosolutions.com/api/notifications',{
+        headers: {
+            'Authorization': `Bearer ${data.token}`,
+            
+          },
+      })
+      
+      // Handle the successful response
+      console.log('Notifications:', response.data);
+      
+      // You can update your state or perform any other logic with the data
+     setNotification(response.data); // Or handle further based on your requirements
+     let count =0;
+     response.data.data.forEach((val) => {
+     
+      if(val.seen==0){
+        count++
+      }
+      
+     });
+     setNotification(count)
+  console.log(response.data)
+    } catch (error) {
+      // Handle errors
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+      } else if (error.request) {
+        // No response was received from the server
+        console.error('No response received:', error.request);
+      } else {
+        // Something else caused the error
+        console.error('Error message:', error.message);
+      }
+    }
+  };
+
 
 
 // Check if property is in wishlist
@@ -195,6 +250,7 @@ const handleRefresh = () => {
   }, 2000); // Simulate 2 seconds of refresh time
 };
 useEffect(()=>{
+  fetchNotifications()
 dispatch(fetchProperties())
 },[])
   
@@ -212,8 +268,11 @@ dispatch(fetchProperties())
         </View>
        
         </View>
-        <TouchableOpacity onPress={()=>{nav.navigate('Notification')}}>
+        <TouchableOpacity style={{position:'relative'}} onPress={()=>{nav.navigate('Notification')}}>
         <Image style={{height:30,width:30,objectFit:'contain'}} source={require('../assets/appimages/notification.png')} />
+        <Text style={{ color: 'white',padding:3,backgroundColor:'red',fontSize:8,textAlign:'center',borderRadius:50,position:'absolute',right:-1,top:1 }}>
+  {notification}
+</Text>
         </TouchableOpacity>
        
         </View>
