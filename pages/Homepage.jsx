@@ -16,6 +16,7 @@ import { fetchCurrentlocation } from '../reduxStore/currentlocationslice';
 import { fetchUserData } from '../reduxStore/userdataslice';
 import { fetchProfile } from '../reduxStore/profiledataslice';
 import SkeletonLoader from '../component/skeleton';
+import { fetchStates } from '../reduxStore/getstatesslice';
 
 
 const Home = () => {
@@ -250,7 +251,7 @@ const renderCarousel= ({ item, index }) => {
         console.error('No response received:', error.request);
       } else {
         // Something else caused the error
-        console.error('Error message:', error.message);
+        console.error('Error message:', error);
       }
     }
   };
@@ -283,8 +284,9 @@ dispatch(fetchUserData());
       dispatch(fetchProperties(1))
 dispatch(fetchMessage());
 dispatch(fetchWishlist());
-dispatch(fetchProfile())
-dispatch(fetchCurrentlocation())
+dispatch(fetchProfile());
+dispatch(fetchCurrentlocation());
+dispatch(fetchStates());
 },[])
 useEffect(()=>{
 notification

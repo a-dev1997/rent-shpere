@@ -126,11 +126,11 @@ console.log(response.data)
                       <Image style={{ height: 100, width: 100 }} source={{ uri: `${BASE_ASSET}uploads/propertyImages/${val}` }} />
                     </TouchableOpacity>
 
-                    {profiledata.data.id == property.user_id && val != property.featured_image ?
+                    {profiledata.data.id == property.user_id  ?
                       <TouchableOpacity style={{ padding: 5 }}>
-                        <Text style={{ color: '#315EE7', fontWeight: 500, fontSize: 12, textAlign: 'center' }}>set display image</Text>
-                      </TouchableOpacity> : <Text style={{ textAlign: 'center' }}>display image</Text>
-                    }:
+                      { val != property.featured_image ?  <Text style={{ color: '#315EE7', fontWeight: 500, fontSize: 12, textAlign: 'center' }}>set display image</Text>:<Text>display image</Text>}
+                      </TouchableOpacity> :''
+                    }
 
                   </View>
                 )
