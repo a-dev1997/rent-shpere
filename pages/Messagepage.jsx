@@ -21,7 +21,7 @@ const Message=()=>{
                 messagedata?.data?.map((val,index)=>{
                     if(val.user_data!=null ){
                         return(
-                            <TouchableOpacity onPress={()=>{nav.navigate('Chat',{id:val.user_data.id,name:val.user_data.name,profile:val.user_data.profile_img})}} style={{flexDirection:'row',marginVertical:10,backgroundColor:val.seen?'#F2F3F3':
+                            <TouchableOpacity key={index} onPress={()=>{nav.navigate('Chat',{id:val.user_data.id,name:val.user_data.name,profile:val.user_data.profile_img})}} style={{flexDirection:'row',marginVertical:10,backgroundColor:val.seen?'#F2F3F3':
                             '#917AFD',paddingVertical:10,marginHorizontal:10,paddingHorizontal:10,borderRadius:10,overflow:'hidden'}}>
                                 <Image style={{height:60,width:60,borderRadius:50}} source={ val.user_data.profile_img? {uri:`${BASE_ASSET}/${val.user_data.profile_img}`}:require('../assets/appimages/dummyimg.png')} />
                                 <View style={{justifyContent:'space-between'}}>

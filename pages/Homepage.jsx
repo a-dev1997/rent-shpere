@@ -1,20 +1,27 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { BASE_ASSET, BASE_URL } from '../config';
 import Carousel from 'react-native-reanimated-carousel';
-import { ScrollView, View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,KeyboardAvoidingView ,Alert,RefreshControl} from 'react-native';
+import { ScrollView, View, Text, Image, TextInput, BackHandler,TouchableOpacity, StyleSheet, ActivityIndicator,KeyboardAvoidingView ,Alert,RefreshControl} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { fetchProperties } from '../reduxStore/getpropertiesslice';
 import axios from 'axios';
 import { fetchWishlist } from '../reduxStore/wishlistslice';
 import Pusher from 'pusher-js';
 import { notificationAlert } from '../component/notification';
 import { fetchMessage } from '../reduxStore/messageslice';
-import { messageNotification } from '../component/messageNotification';
+import {MessageNotify } from '../component/messageNotification';
+import { fetchCurrentlocation } from '../reduxStore/currentlocationslice';
+import { fetchUserData } from '../reduxStore/userdataslice';
+import { fetchProfile } from '../reduxStore/profiledataslice';
+import SkeletonLoader from '../component/skeleton';
+
 
 const Home = () => {
   const nav = useNavigation();
+  const route =useRoute()
+ 
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('rent');
   const [applyflter,setApplyfilter]=useState(false)
@@ -24,7 +31,7 @@ const Home = () => {
   const [wishlistLoading,setWishlistLoading]=useState(false);
   const { data, status } = useSelector((state) => state.userInfo);
   const { propdata, propstatus, currentPage, hasMore,lastPage } = useSelector((state) => state.getproperties);
-  console.log('pro'+propdata)
+ console.log(propstatus+"kjfkdjfjdkfjd")
   // const [properties,setProperties]=useState(null)
   const { catData, catStatus } = useSelector((state) => state.category);
   const { locationdata, locationstatus } = useSelector((state) => state.getcurrentlocation);
@@ -33,7 +40,24 @@ const Home = () => {
   
  
   const [loading, setLoading] = useState(false);
+  const [backPressed, setBackPressed] = useState(0);
 
+  // useEffect(() => {
+  //      const backAction = () => {
+      
+  //         BackHandler.exitApp();
+  //         return true;
+       
+  //      };
+   
+  //      // Add back handler listener
+  //      BackHandler.addEventListener('hardwareBackPress', backAction);
+   
+  //      // Cleanup the listener when the component unmounts
+  //      return () => {
+  //        BackHandler.removeEventListener('hardwareBackPress', backAction);
+  //      };
+  //    }, [backPressed]);
   // Sample data for the carousel
 const carouselData = [
   {
@@ -58,32 +82,34 @@ const carouselData = [
   },
 ];
 
- const {profiledata,profilestatus}=useSelector((state)=>state.userProfile)
-  useEffect(()=>{
-    var pusher = new Pusher('8f73656210544fae641f', {
-      cluster: 'ap2'
-    });
-  const applychannel= pusher.subscribe('apply.'+profiledata.data.id);
-            applychannel.bind('ApplyNotify',function(event){
-              const randomNumber = Math.floor(Math.random() * 1000) + 1;
-              fetchNotifications()
-              notificationAlert(event.sender,event.title,event.message)
+//  const {profiledata,profilestatus}=useSelector((state)=>state.userProfile)
+//   useEffect(()=>{
+//     var pusher = new Pusher('8f73656210544fae641f', {
+//       cluster: 'ap2'
+//     });
+//   const applychannel= pusher.subscribe('apply.'+profiledata.data.id);
+//             applychannel.bind('ApplyNotify',function(event){
+//               const randomNumber = Math.floor(Math.random() * 1000) + 1;
+//               fetchNotifications()
+//               notificationAlert(event.sender,event.title,event.message)
               
-            })
-         const messageChannel=   pusher.subscribe('chat.'+profiledata.data.id);
-         messageChannel.bind('GotMessage',function(event){
-              const randomNumber = Math.floor(Math.random() * 1000) + 1;
-              dispatch(fetchMessage())
-              // notificationAlert(event.sender,event.title,event.message)
+//             })
+//          const messageChannel=   pusher.subscribe('chat.'+profiledata.data.id);
+//          messageChannel.bind('GotMessage',function(event){
+//               const randomNumber = Math.floor(Math.random() * 1000) + 1;
+//               dispatch(fetchMessage())
+//               // notificationAlert(event.sender,event.title,event.message)
+             
+//               messageNotification(event.sender_id,event.name,event.message)
               
-              messageNotification(event.sender_id,event.name,event.message)
               
-            })
-  },[0])
+//             })
+//   },[])
 
 const renderCarousel= ({ item, index }) => {
   return (
     <View style={{}}>
+      
       <Image  source={{ uri: item.image }} style={{height:200,width:'100%',objectFit:'cover'}} />
      
     </View>
@@ -200,8 +226,9 @@ const renderCarousel= ({ item, index }) => {
       // Handle the successful response
       console.log('Notifications:', response.data);
       
+      
       // You can update your state or perform any other logic with the data
-     setNotification(response.data); // Or handle further based on your requirements
+    //  setNotification(response.data); // Or handle further based on your requirements
      let count =0;
      response.data.data.forEach((val) => {
      
@@ -239,23 +266,32 @@ const isPropertyInWishlist = (propertyId) => {
 };
 const [isRefreshing, setIsRefreshing] = useState(false);
 
-const handleRefresh = () => {
-  setIsRefreshing(true);
-  dispatch(fetchProperties(1))
-  setCount(count+1)
-  // Simulate a data refresh (e.g., fetching new data)
-  setTimeout(() => {
-    setIsRefreshing(false); // Stop refreshing after some time
-    console.log('Page Refreshed!');
-  }, 2000); // Simulate 2 seconds of refresh time
-};
+// const handleRefresh = () => {
+//   setIsRefreshing(true);
+//   dispatch(fetchProperties(1))
+//   setCount(count+1)
+//   // Simulate a data refresh (e.g., fetching new data)
+//   setTimeout(() => {
+//     setIsRefreshing(false); // Stop refreshing after some time
+//     console.log('Page Refreshed!');
+//   }, 2000); // Simulate 2 seconds of refresh time
+// };
 useEffect(()=>{
   fetchNotifications()
-dispatch(fetchProperties())
+// dispatch(fetchProperties())
+dispatch(fetchUserData());
+      dispatch(fetchProperties(1))
+dispatch(fetchMessage());
+dispatch(fetchWishlist());
+dispatch(fetchProfile())
+dispatch(fetchCurrentlocation())
 },[])
-  
+useEffect(()=>{
+notification
+},[count])
   return (
     <View style={{ flex: 5, backgroundColor: 'white'}}>
+  <MessageNotify/>
       <View style={{ paddingHorizontal: 20, paddingBottom: 10,flex:1}}>
         <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
           <View>
@@ -315,9 +351,7 @@ dispatch(fetchProperties())
       <View style={{ width: '100%', flex:5,height:'100%' }}>
       
        
-        <ScrollView  refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
-      } >
+        <ScrollView   >
 
         <View style={{ paddingHorizontal: 0,marginVertical:20,backgroundColor:'#E5E5E5'}}>
           <Text style={{ fontWeight: 700, fontSize: 18, color: '#1A1E25' }}>Near Your Location</Text>
@@ -345,8 +379,8 @@ dispatch(fetchProperties())
             
           {/* </View> */}
 
-              <ScrollView horizontal={true}>
-           {properties.map(( item ) => {
+              <ScrollView horizontal={true} contentContainerStyle={{width:propstatus=='loading' || propstatus=='idle' || propstatus=='error'?'100%':''}}>
+           {propstatus=='loading' || propstatus=='idle' || propstatus=='error' ? <SkeletonLoader/> :  properties.map(( item ) => {
     const dataFormat = (date) => {
       if (!date) return "";
       const a = new Date(date);
@@ -370,7 +404,7 @@ dispatch(fetchProperties())
   };
     return (
       <TouchableOpacity
-      
+      key={item.id}
         onPress={() => {
           // Navigate to the property view
           nav.navigate('Propertyview', { id: item.id });
@@ -458,7 +492,7 @@ dispatch(fetchProperties())
             
           {/* </View> */}
 
-              <ScrollView horizontal={true}>
+              {/* <ScrollView horizontal={true}>
            {properties.map(( item ) => {
     const dataFormat = (date) => {
       if (!date) return "";
@@ -483,7 +517,7 @@ dispatch(fetchProperties())
   };
     return (
       <TouchableOpacity
-      key={item.id}
+      key={"ggg"+item.id}
         onPress={() => {
           // Navigate to the property view
           nav.navigate('Propertyview', { id: item.id });
@@ -540,7 +574,7 @@ dispatch(fetchProperties())
       </TouchableOpacity>
            )} )
   }
-              </ScrollView>
+              </ScrollView> */}
 
               
 
@@ -571,7 +605,7 @@ dispatch(fetchProperties())
             
           {/* </View> */}
 
-              <ScrollView horizontal={true}>
+              {/* <ScrollView horizontal={true}>
            {properties.map(( item,index ) => {
     const dataFormat = (date) => {
       if (!date) return "";
@@ -596,7 +630,7 @@ dispatch(fetchProperties())
   };
     return (
       <TouchableOpacity
-      key={index}
+      key={"ddd"+index}
         onPress={() => {
           // Navigate to the property view
           nav.navigate('Propertyview', { id: item.id });
@@ -653,7 +687,7 @@ dispatch(fetchProperties())
       </TouchableOpacity>
            )} )
   }
-              </ScrollView>
+              </ScrollView> */}
 
               
 

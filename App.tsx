@@ -1,8 +1,9 @@
 import { View,Text,Image } from "react-native"
 import 'react-native-reanimated';
+import React from "react";
 import Pusher from 'pusher-js';
 import axios from "axios";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useRoute } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector, UseSelector } from "react-redux";
@@ -29,12 +30,17 @@ import { useEffect, useState } from "react";
 import Notification from "./pages/Notification";
 import Chat from "./pages/Chantpage";
 
+
+
+
+
  
 
 function  RootStack(){
   const Stack=createNativeStackNavigator();
+
   return(
-  <Stack.Navigator initialRouteName="Getstarted" screenOptions={{headerShown:false}}>
+  <Stack.Navigator initialRouteName="Splashscreen" screenOptions={{headerShown:false}}>
     <Stack.Screen name="Splashscreen" component={SplashScreen}/>
     <Stack.Screen name="Getstarted" component={GetStarted} />
     <Stack.Screen name="Signin" component={Signin} />
@@ -58,19 +64,7 @@ function  RootStack(){
 
 function MyTabs() {
   const Tab = createBottomTabNavigator();
-  // const {profiledata,profilestatus}=useSelector((state:any)=>state.userProfile)
-  // useEffect(()=>{
-  //   var pusher = new Pusher('8f73656210544fae641f', {
-  //     cluster: 'ap2'
-  //   });
-  // const applychannel= pusher.subscribe('apply.2');
-  //           applychannel.bind('ApplyNotify',function(event:any){
-  //            console.log(event)
-            
-             
-  //           })
-  // },[])
- 
+
   return (
     <Tab.Navigator screenOptions={{
       headerShown:false,
@@ -85,9 +79,11 @@ function MyTabs() {
     }} initialRouteName="Home">
       <Tab.Screen options={{
          tabBarIcon:({focused})=>{
+         
           return(
               
               <View style={{justifyContent:'center',width:'100%'}}>
+                
                   <Image style={{height:40,width:40}}  resizeMode="contain"  source={
                     focused
                       ? require('./assets/appimages/home-icon-active.png') // Active image
@@ -138,6 +134,7 @@ function MyTabs() {
           return(
               
               <View style={{justifyContent:'center',width:'100%'}}>
+                
                   <Image style={{height:40,width:40}}  resizeMode="contain"  source={
                     focused
                       ? require('./assets/appimages/chat-icon-active.png') // Active image
@@ -175,7 +172,9 @@ const App=()=>{
  
   return(
     <Provider store={store}>
+      
     <NavigationContainer >
+    
       <RootStack/>
     </NavigationContainer>
     </Provider>

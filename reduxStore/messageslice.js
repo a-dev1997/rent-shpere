@@ -25,6 +25,7 @@ import axios from "axios";
                 }
             });
         // console.log('seen count'+count+msg.data);
+        
             return { data: msg.data,seencount:count };
         } else {
             throw new Error("User not found in AsyncStorage");

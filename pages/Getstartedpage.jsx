@@ -22,8 +22,8 @@ const GetStarted=()=>{
     // console.log(propdata)
     // console.log(data)
     // console.log('dkfjd'+catData)
-    const {messagedata,messagestatus}=useSelector((state)=>state.messages);
-    console.log("jfkdjfdfjdk this is "+JSON.stringify(messagedata))
+    // const {messagedata,messagestatus}=useSelector((state)=>state.messages);
+  
  useEffect(()=>{
     dispatch(fetchUserData())
     dispatch(fetchProperties(1))

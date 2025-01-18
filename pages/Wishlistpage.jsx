@@ -42,6 +42,7 @@ const Wishlist = () => {
   useEffect(() => {
     console.log('render')
   }, [count])
+  if(data){
   return (
     <View style={{ flex: 1 }} >
       <LinearGradient
@@ -109,6 +110,9 @@ const Wishlist = () => {
       </ScrollView>
     </View>
   )
+}else{
+  nav.navigate('Signin')
+}
 }
 
 export default Wishlist;

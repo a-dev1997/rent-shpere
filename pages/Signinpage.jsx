@@ -1,12 +1,13 @@
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Alert ,BackHandler} from "react-native";
 import Input from "../component/input"; // Your custom Input component
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useState,useEffect} from "react";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import Toast from 'react-native-toast-message';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import store from "../reduxStore/store";
+
 
 const Signin = () => {
   const nav = useNavigation();
@@ -20,7 +21,7 @@ const Signin = () => {
   const storeuser=async(data)=>{
     await AsyncStorage.setItem('user',JSON.stringify({token:data})).then((res)=>{
         
-            nav.navigate('Mytabs')
+            nav.navigate('Splashscreen')
         
     })
 }
@@ -32,7 +33,21 @@ const Signin = () => {
     console.log("Form Submitted:", data);
     handleLogin(data); // Call login function with the form data
   };
-
+  useEffect(() => {
+     const backAction = () => {
+     Alert.alert('are you sure ?')  // Replace 'Home' with the name of your home screen
+       return true; // Prevent the default back action
+     };
+ 
+     // Add back handler listener
+     BackHandler.addEventListener('hardwareBackPress', backAction);
+ 
+     // Cleanup the listener when the component unmounts
+     return () => {
+       BackHandler.removeEventListener('hardwareBackPress', backAction);
+     };
+   }, [nav]);
+ 
   // Login API function
   const handleLogin = async ({ email, password }) => {
     try {
@@ -167,6 +182,23 @@ const Signin = () => {
         >
           <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: 500 }}>
             Create an Account
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            
+            height: 50,
+            width: "50%",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: 7,
+            marginVertical:10
+          }}
+          onPress={() => { nav.navigate('Mytabs') }}
+        >
+          <Text style={{ color: "#315EE7", fontSize: 16, fontWeight: 500 }}>
+          use as Guest
           </Text>
         </TouchableOpacity>
       </View>

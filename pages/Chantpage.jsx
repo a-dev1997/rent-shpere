@@ -8,13 +8,14 @@ import { BASE_ASSET } from "../config"
 import { fetchMessage } from "../reduxStore/messageslice"
 
 
+
 const Chat=()=>{
   
 const dispatch = useDispatch()
     const route=useRoute();
     const {id,name,profile}=route.params;
  const {data,status}=useSelector((state)=>state.userInfo);
-
+ const{messagedata,messagestatus}=useSelector((state)=>state.messages)
  const [userdata,setUserdata]=useState(null)
  const [newmessage,setMessage]=useState('');
  const scrollViewRef = useRef(null);
@@ -35,9 +36,9 @@ const dispatch = useDispatch()
     // console.log('User send message:', response.data);
     
       dispatch(fetchMessage())
-      fetchUserProfile()
+      fetchUserMessage()
       seenMessage()
-      scrollViewRef.current?.scrollToEnd({ animated: false });
+      // scrollViewRef.current?.scrollToEnd({ animated: false });
       
     // You can return or handle the response data as needed
     // return response.data;
@@ -75,7 +76,7 @@ const dispatch = useDispatch()
   }
 };
 
-    const fetchUserProfile = async () => {
+    const fetchUserMessage = async () => {
         try {
           // Make the GET request to the API
           const response = await axios.get(`https://rentsphere.onavinfosolutions.com/api/user-messages/${id}`,{
@@ -108,18 +109,19 @@ const dispatch = useDispatch()
       // });
 
      useEffect(()=>{
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-     },[])
+      scrollViewRef.current?.scrollToEnd({ animated: false });
+     },[messagedata])
       useEffect(()=>{
       
         seenMessage()
-            fetchUserProfile()
+        fetchUserMessage()
             
-      },[])
+      },[messagedata])
 
     return(
 
         <View style={{flex:1,backgroundColor:'white'}}>
+         
                   <LinearGradient
                                   colors={['#917AFD','#6246EA']}
                                   style={{flexDirection:'row',paddingVertical:10,paddingHorizontal:10}}
@@ -132,7 +134,7 @@ const dispatch = useDispatch()
                 {userdata?.text?.map((val,index)=>{
                   if(id==val.receiver_id){
                     return(
-                    <View style={{width:'70%',marginVertical:10,padding:10,borderRadius:10,marginLeft:'27%',backgroundColor:"#917AFD",
+                    <View key={index} style={{width:'70%',marginVertical:10,padding:10,borderRadius:10,marginLeft:'27%',backgroundColor:"#917AFD",
                       elevation: 5,
                       shadowColor: '#171717',
                       shadowOffset: { width: 1, height: 3 },
@@ -147,7 +149,7 @@ const dispatch = useDispatch()
                     
                   }else{
                     return(
-                      <View style={{width:'70%',marginVertical:10,padding:10,borderRadius:10,backgroundColor:"white",marginLeft:10,
+                      <View key={index} style={{width:'70%',marginVertical:10,padding:10,borderRadius:10,backgroundColor:"white",marginLeft:10,
 
                         elevation: 5,
                         shadowColor: '#171717',

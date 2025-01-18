@@ -64,7 +64,7 @@ const myProfile = createSlice({
         state.profilestatus = 'loading';
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.mypropstatus = 'succeeded';
+        state.profilestatus = 'succeeded';
         // Append the new data to the existing data
         state.profiledata =action.payload.data;
        

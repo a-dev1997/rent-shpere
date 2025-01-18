@@ -17,6 +17,11 @@ const Profile = () => {
     console.log('profidatafetch' + JSON.stringify(profiledata))
 
     const [userData, setUserdata] = useState(null)
+//  useEffect(()=>{
+// if(!data){
+//     nav.navigate('Signin')
+// }
+//  },[])
 
    // Function to send POST request to logout API
 const logout = async () => {
@@ -34,7 +39,7 @@ const logout = async () => {
       dispatch(fetchUserData())
       // Handle successful response
       console.log('Logout successful:', response.data);
-      nav.navigate('Signin')
+      nav.navigate('Splashscreen')
       return response.data;
     } catch (error) {
       // Handle errors
@@ -135,7 +140,11 @@ const logout = async () => {
     //                        </TouchableOpacity>
     //         </View>
     // </ScrollView>
-    return (<View style={{ flex: 1, padding: 20 }}>
+    if(data){
+
+    
+    return (
+    <View style={{ flex: 1, padding: 20 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '10' }}>
             <Text style={{ fontWeight: 700, fontSize: 20 }}>Welcome , {profiledata.data.name}</Text>
             <Image style={{ height: 60, width: 60, objectFit: 'cover', borderRadius: 50 }} source={profiledata.data.profile_img ? { uri: `${BASE_ASSET}/${profiledata.data.profile_img}` } : { uri: 'https://s3-alpha-sig.figma.com/img/a296/3f70/a7feed7f191c17b1327b305679a65ff7?Expires=1736726400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ypsc6G4VY~wuSSG47f7kDCsa8zGHoC8~uwKAU84MQLwZtt3h3xWuPZcLkjf8FBhBOjX6kpV~EUDzARGRLfeb-q8aa5fMeA02TYdju7FfRWEoKfe8SfsCP7J1Fah5zrN94ehnRJhgSf~-7WbW8xz57qBIFhOfNE5ptjKGCOTggH3yj-VFBBdswjvnhdmwrVjWdpjwiA1p1hj69NB5IhgfdORzJ8~6yHWWe0l7LK41G03uQXKC8qTd0ygb39fEJe-maJaabER4RqwnboIzkI1V1kRrK4CPuZEfg4zM7Xi3MVw6O3oTRLD5uziSUIc8fdO0SkfMeVs~~aQi6jfJLfvDsw__' }} />
@@ -188,6 +197,9 @@ const logout = async () => {
         </TouchableOpacity>
     </View>
     )
+}else{
+    nav.navigate('Signin')
+}
 }
 
 

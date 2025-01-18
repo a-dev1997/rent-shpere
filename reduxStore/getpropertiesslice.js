@@ -35,7 +35,8 @@ const userData = createSlice({
       .addCase(fetchProperties.fulfilled, (state, action) => {
         state.propstatus = 'succeeded';
         // Append the new data to the existing data
-        state.propdata = [...state.propdata,...action.payload.data];
+        // state.propdata = [...state.propdata,...action.payload.data];
+        state.propdata = action.payload.data;
         // Update the current page and determine if there are more pages
         state.currentPage = action.payload.currentPage;
         state.lastPage=action.payload.lastPage;

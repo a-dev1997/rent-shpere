@@ -112,7 +112,7 @@ const data = response.data.data;
       >
         <Text
           style={{ color:selectedValue === value? 'white':'black', fontWeight: 700, fontSize: 14, fontStyle: 'italic', paddingHorizontal: 15, paddingVertical: 10 }}
-        >
+        > 
           {label}
         </Text>
       </LinearGradient>
@@ -243,6 +243,7 @@ const handleUpload = async (data) => {
     setIsLoading(false); // Ensure loading state is false when done
   }
 };
+
 
 useEffect(()=>{
 getProperty()
