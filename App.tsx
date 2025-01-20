@@ -29,6 +29,7 @@ import EditProfile from "./pages/ProfileEdit";
 import { useEffect, useState } from "react";
 import Notification from "./pages/Notification";
 import Chat from "./pages/Chantpage";
+import { MessageNotify } from "./component/messageNotification";
 
 
 
@@ -171,13 +172,15 @@ function MyTabs() {
 const App=()=>{
  
   return(
+ 
     <Provider store={store}>
-      
-    <NavigationContainer >
     
+    <NavigationContainer >
+      
       <RootStack/>
     </NavigationContainer>
     </Provider>
+    
   )
 
 }

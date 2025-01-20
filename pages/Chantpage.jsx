@@ -6,6 +6,7 @@ import { useSelector,useDispatch } from "react-redux"
 import { useEffect, useState ,useRef, useCallback} from "react"
 import { BASE_ASSET } from "../config"
 import { fetchMessage } from "../reduxStore/messageslice"
+import { MessageNotify } from "../component/messageNotification"
 
 
 
@@ -121,7 +122,7 @@ const dispatch = useDispatch()
     return(
 
         <View style={{flex:1,backgroundColor:'white'}}>
-         
+         <MessageNotify/>
                   <LinearGradient
                                   colors={['#917AFD','#6246EA']}
                                   style={{flexDirection:'row',paddingVertical:10,paddingHorizontal:10}}
@@ -134,7 +135,7 @@ const dispatch = useDispatch()
                 {userdata?.text?.map((val,index)=>{
                   if(id==val.receiver_id){
                     return(
-                    <View key={index} style={{width:'70%',marginVertical:10,padding:10,borderRadius:10,marginLeft:'27%',backgroundColor:"#917AFD",
+                    <View key={index} style={{width:'70%',marginVertical:10,padding:10,borderBottomLeftRadius:10,borderTopLeftRadius:10,borderTopRightRadius:10,marginLeft:'27%',backgroundColor:"#917AFD",
                       elevation: 5,
                       shadowColor: '#171717',
                       shadowOffset: { width: 1, height: 3 },
@@ -149,7 +150,7 @@ const dispatch = useDispatch()
                     
                   }else{
                     return(
-                      <View key={index} style={{width:'70%',marginVertical:10,padding:10,borderRadius:10,backgroundColor:"white",marginLeft:10,
+                      <View key={index} style={{width:'70%',marginVertical:10,padding:10,borderTopRightRadius:10,borderBottomRightRadius:10,borderTopLeftRadius:10,backgroundColor:"white",marginLeft:10,
 
                         elevation: 5,
                         shadowColor: '#171717',

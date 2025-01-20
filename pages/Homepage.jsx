@@ -5,7 +5,7 @@ import { ScrollView, View, Text, Image, TextInput, BackHandler,TouchableOpacity,
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import { fetchProperties } from '../reduxStore/getpropertiesslice';
+
 import axios from 'axios';
 import { fetchWishlist } from '../reduxStore/wishlistslice';
 import Pusher from 'pusher-js';
@@ -31,9 +31,8 @@ const Home = () => {
   const [activeFilter, setActivefilter] = useState('All');
   const [wishlistLoading,setWishlistLoading]=useState(false);
   const { data, status } = useSelector((state) => state.userInfo);
-  const { propdata, propstatus, currentPage, hasMore,lastPage } = useSelector((state) => state.getproperties);
- console.log(propstatus+"kjfkdjfjdkfjd")
-  // const [properties,setProperties]=useState(null)
+  const [properties,setProperties]=useState(null)
+  const [isloading,setIsloading]=useState(false)
   const { catData, catStatus } = useSelector((state) => state.category);
   const { locationdata, locationstatus } = useSelector((state) => state.getcurrentlocation);
   const {wishlistdata,wishliststatus}=useSelector((state)=>state.userWishlist)
@@ -83,29 +82,7 @@ const carouselData = [
   },
 ];
 
-//  const {profiledata,profilestatus}=useSelector((state)=>state.userProfile)
-//   useEffect(()=>{
-//     var pusher = new Pusher('8f73656210544fae641f', {
-//       cluster: 'ap2'
-//     });
-//   const applychannel= pusher.subscribe('apply.'+profiledata.data.id);
-//             applychannel.bind('ApplyNotify',function(event){
-//               const randomNumber = Math.floor(Math.random() * 1000) + 1;
-//               fetchNotifications()
-//               notificationAlert(event.sender,event.title,event.message)
-              
-//             })
-//          const messageChannel=   pusher.subscribe('chat.'+profiledata.data.id);
-//          messageChannel.bind('GotMessage',function(event){
-//               const randomNumber = Math.floor(Math.random() * 1000) + 1;
-//               dispatch(fetchMessage())
-//               // notificationAlert(event.sender,event.title,event.message)
-             
-//               messageNotification(event.sender_id,event.name,event.message)
-              
-              
-//             })
-//   },[])
+
 
 const renderCarousel= ({ item, index }) => {
   return (
@@ -117,51 +94,8 @@ const renderCarousel= ({ item, index }) => {
   );
 };
 
-  // Fetch properties when propstatus is succeeded
- let properties=useMemo(() => {
-    if (propstatus == 'succeeded') {
-    
-       
-        
-      if(currentPage==1){
-        return propdata
-      }else{
-        return propdata
-      }
-        
-        
-     
-      
-      }
-    
-  }, [ propdata,addWishlist,removeProperty,count]);
-
-
-  const handleEndReached = () => {
-    // Prevent fetching if already loading or there are no more items
-    if (loading || !hasMore) {
-      return;
-    }
   
-     // Set loading to true while new data is being fetched
-    if(currentPage!=lastPage){
-     
-      setLoading(true);
-    // After fetching data successfully
-    setTimeout(() => {
-      dispatch(fetchProperties(currentPage+1));
-      
-      if (propstatus == 'succeeded') {
-        
-       
 
-  
-        setLoading(false);  // Reset loading state after data has been fetched
-      }
-    }, 4000);
-    }  // Simulating a loading delay
-    console.log('loading data ')
-  };
   
   const wishlistdat=useMemo(()=>{return wishlistdata},[addWishlist,removeProperty])
 
@@ -188,6 +122,11 @@ const renderCarousel= ({ item, index }) => {
     }
   };
 
+
+
+
+
+  // remove whishlist 
   const removeProperty = async (property_id) => {
     try {
       const response = await fetch(`${BASE_URL}remove-property/${property_id}`, {
@@ -213,6 +152,32 @@ const renderCarousel= ({ item, index }) => {
       console.log('Error occurred:', err.message || err);
     }
   };
+
+    
+  
+
+  const nearProperty = async (location) => {
+    setIsloading(true)
+    try {
+      // Make the GET request using Axios
+      const response = await axios.get(`${BASE_URL}near-properties/${location}`);
+      
+      // Check if response has data and set it
+      if (response && response.data) {
+        setProperties(response.data.data); // Assuming response.data contains a 'data' property
+    console.log("properited"+JSON.stringify(response.data))
+        setIsloading(false)
+      } else {
+        throw new Error('No data found');
+      }
+    } catch (err) {
+      // Handle error
+      console.log('Error occurred:', err.message || err);
+    }
+  };
+  
+
+
 
   const fetchNotifications = async () => {
     try {
@@ -265,23 +230,14 @@ const isPropertyInWishlist = (propertyId) => {
   }
 
 };
-const [isRefreshing, setIsRefreshing] = useState(false);
 
-// const handleRefresh = () => {
-//   setIsRefreshing(true);
-//   dispatch(fetchProperties(1))
-//   setCount(count+1)
-//   // Simulate a data refresh (e.g., fetching new data)
-//   setTimeout(() => {
-//     setIsRefreshing(false); // Stop refreshing after some time
-//     console.log('Page Refreshed!');
-//   }, 2000); // Simulate 2 seconds of refresh time
-// };
+
+
 useEffect(()=>{
-  fetchNotifications()
+  
 // dispatch(fetchProperties())
 dispatch(fetchUserData());
-      dispatch(fetchProperties(1))
+      
 dispatch(fetchMessage());
 dispatch(fetchWishlist());
 dispatch(fetchProfile());
@@ -289,8 +245,35 @@ dispatch(fetchCurrentlocation());
 dispatch(fetchStates());
 },[])
 useEffect(()=>{
-notification
+  fetchNotifications()
 },[count])
+useFocusEffect(
+  useCallback(()=>{
+    
+    if(locationstatus=='succeeded'){
+      nearProperty(locationdata.location)
+    }else{
+      nearProperty('delhi')
+    }
+  },[locationstatus])
+
+
+)
+const calculateRatings = (reviews) => {
+  let totalRating = 0;
+  let totalUser = 0;
+
+  reviews?.forEach((val) => {
+    if (val?.rating) {
+      totalRating += val.rating;
+      totalUser += 1;
+    }
+  });
+
+  return { totalRating, totalUser };
+};
+
+
   return (
     <View style={{ flex: 5, backgroundColor: 'white'}}>
   <MessageNotify/>
@@ -381,8 +364,8 @@ notification
             
           {/* </View> */}
 
-              <ScrollView horizontal={true} contentContainerStyle={{width:propstatus=='loading' || propstatus=='idle' || propstatus=='error'?'100%':''}}>
-           {propstatus=='loading' || propstatus=='idle' || propstatus=='error' ? <SkeletonLoader/> :  properties.map(( item ) => {
+              <ScrollView horizontal={true} contentContainerStyle={{width:properties==null?'100%':''}}>
+           {properties==null && isloading  ? <SkeletonLoader/> :  properties?.map(( item ) => {
     const dataFormat = (date) => {
       if (!date) return "";
       const a = new Date(date);
@@ -404,6 +387,8 @@ notification
           });
       }
   };
+  const { totalRating, totalUser } = calculateRatings(item.property_review);
+ 
     return (
       <TouchableOpacity
       key={item.id}
@@ -419,6 +404,19 @@ notification
           source={{ uri: `${BASE_ASSET}uploads/propertyImages/${item.featured_image}` }}
         />
         <View style={styles.cardContent}>
+        <View style={{flexDirection:'row',alignItems:'center'}}>
+          
+        <Image source={require('../assets/appimages/small-star.png')} />
+        
+       {item?.property_review?.length === 0 ? '' : (
+  <View style={{ flexDirection: 'row' }}>
+    <Text>{totalRating / totalUser}</Text>
+    <Text>{"(" + totalUser + ")"}</Text>
+  </View>
+)
+           }
+      
+      </View>
           <Text style={styles.cardText}>{item.property_name}</Text>
           <Text style={{ color: '#7D7F88' }}>
             {item.city + ' ' + item.state}

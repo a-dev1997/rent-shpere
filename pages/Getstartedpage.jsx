@@ -24,18 +24,18 @@ const GetStarted=()=>{
     // console.log('dkfjd'+catData)
     // const {messagedata,messagestatus}=useSelector((state)=>state.messages);
   
- useEffect(()=>{
-    dispatch(fetchUserData())
-    dispatch(fetchProperties(1))
-    dispatch(fetchCatData())
-    dispatch(fetchCurrentlocation())
-    dispatch(fetchProfile())
-    dispatch(fetchWishlist())
-    dispatch(fetchStates())
-    dispatch((fetchMyProperties()))
-    dispatch(fetchMessage())
-   console.log('render')
-  },[])
+//  useEffect(()=>{
+//     dispatch(fetchUserData())
+//     dispatch(fetchProperties(1))
+//     dispatch(fetchCatData())
+//     dispatch(fetchCurrentlocation())
+//     dispatch(fetchProfile())
+//     dispatch(fetchWishlist())
+//     dispatch(fetchStates())
+//     dispatch((fetchMyProperties()))
+//     dispatch(fetchMessage())
+//    console.log('render')
+//   },[])
     return(
         <ScrollView>
             <View style={styles.imageview}>

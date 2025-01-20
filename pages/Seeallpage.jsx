@@ -1,19 +1,104 @@
-import { ScrollView ,View,TouchableOpacity,Text,StyleSheet,Image,TextInput} from "react-native"
-import { useSelector } from "react-redux";
+import { ScrollView ,View,TouchableOpacity,Text,StyleSheet,Image,TextInput, FlatList,ActivityIndicator} from "react-native"
+import { useDispatch, useSelector } from "react-redux";
 import LinearGradient from "react-native-linear-gradient";
 import { BASE_ASSET } from "../config";
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
+import { fetchProperties } from "../reduxStore/getpropertiesslice";
 
 
 const SeeAll=()=>{
   const nav=useNavigation()
+  const dispatch =useDispatch()
 const {catData,catStatus}=useSelector((state)=>state.category);
-const {propdata,propstatus}=useSelector((state)=>state.getproperties)
+// const {propdata,propstatus}=useSelector((state)=>state.getproperties)
+const [prop,setProp]=useState([])
   const [applyflter,setApplyfilter]=useState(false)
+  const [loading, setLoading] = useState(false);
+  const { propdata, propstatus, currentPage, hasMore,lastPage } = useSelector((state) => state.getproperties);
 
     const [activeFilter, setActivefilter] = useState('All');
     const facility=['WiFi','Shelf check-in',"kitchen",'Free parking','Air condition','Security']
+
+    const render=({item})=>(
+            <TouchableOpacity onPress={()=>{nav.navigate('Propertyview',{id:item.id})}}  style={styles.cardContainer}>
+<Image
+style={styles.cardImage}
+source={{ uri: `${BASE_ASSET}uploads/propertyImages/${item.featured_image}` }}
+/>
+<View style={styles.cardContent}>
+<Text style={styles.cardText}>{item.property_name}</Text>
+<Text style={{color:'#7D7F88'}}>{item.city + item.state}</Text>
+<View style={{flexDirection:'row',justifyContent:'space-between'}}>
+    <View style={{flexDirection:'row'}}>
+        <Image source={require('../assets/appimages/room.png')} />
+        <Text style={{color:"#7D7F88"}}>{item.bedrooms} room</Text>
+    </View>
+    <View style={{flexDirection:'row'}}>
+        <Image source={require('../assets/appimages/home-hashtag.png')} />
+        <Text style={{color:"#7D7F88"}}>{item.carpet_area}m2</Text>
+    </View>
+</View>
+<View style={{flexDirection:'row',justifyContent:'space-between'}} >
+    <View style={{flexDirection:'row'}}>
+    <Text style={{fontWeight:700,fontSize:12,color:'#000000'}}>{item.price}</Text><Text style={{fontWeight:400,fontSize:10,color:'#7D7F88'}}>/{item.payment_type}</Text>
+    </View>
+    
+        <Image style={{height:18,width:18}}  source={require('../assets/appimages/heart.png')} />
+    
+</View>
+</View>
+</TouchableOpacity>
+    //     )
+    // }) :''}
+    )
+
+    const loadMoreData = () => {
+      if(currentPage==lastPage || !hasMore){
+      
+    }else{
+      if (!loading) {
+        setLoading(true);
+       
+
+        dispatch(fetchProperties(currentPage+1))
+       
+        // Simulating network request with setTimeout
+        setTimeout(() => {
+          // Add more items to the list
+          
+          
+          setLoading(false);
+        }, 1500); // Simulate a network request delay of 1.5 seconds
+      }
+      
+      
+    }
+      
+    };
+
+    useFocusEffect(
+  useCallback(()=>{
+    setProp([])
+      dispatch(fetchProperties(1))
+    
+    
+  
+  },[])
+)
+useEffect(() => {
+  if(currentPage!=1){
+    setProp((prev) => {
+    
+
+      // Return the new state with the filtered new data appended
+      return [...prev, ...propdata];
+    })
+  }else{
+    setProp(propdata)
+  }
+  
+}, [propdata]);
     return(
         <View style={{flex:8}}>
          <View style={{flex:0.7,flexDirection:'row',padding:5,justifyContent:'space-between',alignItems:'center',width:'100%'}}>
@@ -80,41 +165,25 @@ const {propdata,propstatus}=useSelector((state)=>state.getproperties)
                 </View>
                
               </View>
-            <ScrollView >
-        { propstatus=='succeeded' ? propdata?.map((val,index)=>{
+            <FlatList
+            data={prop}
+            keyExtractor={(item) => item.id}
+             renderItem={render}
+             onEndReachedThreshold={0.1}
+             onEndReached={loadMoreData}
+             ListFooterComponent={
+              loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+              ) : (
+                <View style={styles.footer}>
+                  <Text>No more data</Text>
+                </View>
+              )
+            }
          
-            return(
-                <TouchableOpacity onPress={()=>{nav.navigate('Propertyview',{id:val.id})}} key={index} style={styles.cardContainer}>
-  <Image
-    style={styles.cardImage}
-    source={{ uri: `${BASE_ASSET}uploads/propertyImages/${val.featured_image}` }}
-  />
-  <View style={styles.cardContent}>
-    <Text style={styles.cardText}>{val.property_name}</Text>
-    <Text style={{color:'#7D7F88'}}>{val.city + val.state}</Text>
-    <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-        <View style={{flexDirection:'row'}}>
-            <Image source={require('../assets/appimages/room.png')} />
-            <Text style={{color:"#7D7F88"}}>{val.bedrooms} room</Text>
-        </View>
-        <View style={{flexDirection:'row'}}>
-            <Image source={require('../assets/appimages/home-hashtag.png')} />
-            <Text style={{color:"#7D7F88"}}>{val.carpet_area}m2</Text>
-        </View>
-    </View>
-    <View style={{flexDirection:'row',justifyContent:'space-between'}} >
-        <View style={{flexDirection:'row'}}>
-        <Text style={{fontWeight:700,fontSize:12,color:'#000000'}}>{val.price}</Text><Text style={{fontWeight:400,fontSize:10,color:'#7D7F88'}}>/{val.payment_type}</Text>
-        </View>
-        
-            <Image style={{height:18,width:18}}  source={require('../assets/appimages/heart.png')} />
-        
-    </View>
-  </View>
-</TouchableOpacity>
-            )
-        }) :''}
-        </ScrollView>
+           />
+       
+        {/* </FlatList> */}
             </View>
             <View style={{display:applyflter==true?'block':'none',backgroundColor:'white',margin:10,borderRadius:10,padding:10,flex:7.5}}>
         <ScrollView>
