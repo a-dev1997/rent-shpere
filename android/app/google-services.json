@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "179276436523",
+    "project_id": "rentsphere-79b58",
+    "storage_bucket": "rentsphere-79b58.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179276436523:android:52a8b78b99b572459f466e",
+        "android_client_info": {
+          "package_name": "com.onavinfosolutions.rentsphere"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChamlVGJB67kAfxUadRN22qrl6HjV_Acg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

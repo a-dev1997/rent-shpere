@@ -410,7 +410,7 @@ const calculateRatings = (reviews) => {
         
        {item?.property_review?.length === 0 ? '' : (
   <View style={{ flexDirection: 'row' }}>
-    <Text>{totalRating / totalUser}</Text>
+    <Text>{ totalUser==0?"0": totalRating / totalUser}</Text>
     <Text>{"(" + totalUser + ")"}</Text>
   </View>
 )
