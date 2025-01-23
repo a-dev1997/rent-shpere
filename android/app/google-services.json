@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:179276436523:android:52a8b78b99b572459f466e",
+        "mobilesdk_app_id": "1:179276436523:android:3e70a6b8f8b8ec2c9f466e",
         "android_client_info": {
-          "package_name": "com.onavinfosolutions.rentsphere"
+          "package_name": "com.rentapp"
         }
       },
       "oauth_client": [],
